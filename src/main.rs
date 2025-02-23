@@ -17,6 +17,11 @@ pub extern "C" fn _start() -> ! {
     #[cfg(target_arch = "x86_64")]
     x86_64::instructions::interrupts::int3();
 
+    // trigger a page fault
+    unsafe {
+        *(0xdeadbeef as *mut u8) = 42;
+    };
+
     #[cfg(test)]
     test_main();
 
