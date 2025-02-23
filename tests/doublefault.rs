@@ -20,6 +20,7 @@ pub extern "C" fn _start() -> ! {
     panic!("Execution continued after stack overflow");
 }
 
+#[cfg(target_arch = "x86_64")]
 lazy_static! {
     static ref TEST_IDT: InterruptDescriptorTable = {
         let mut idt = InterruptDescriptorTable::new();
@@ -37,6 +38,7 @@ pub fn init_test_idt() {
     TEST_IDT.load();
 }
 
+#[cfg(target_arch = "x86_64")]
 extern "x86-interrupt" fn test_double_fault_handler(
     _stack_frame: InterruptStackFrame,
     _error_code: u64,
