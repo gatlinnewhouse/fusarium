@@ -3,6 +3,8 @@ name = "fusarium"
 version = "0.1.0"
 edition = "2018"
 authors = ["Gatlin Newhouse"]
+description = "Fusarium, named after the fungi that affects corn (and its kernels), is an OS Kernel"
+readme = "./README.md"
 
 [dependencies]
 bootloader = { version = "0.9" }

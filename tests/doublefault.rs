@@ -9,13 +9,13 @@ use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    serial_print!("doublefault::should_fail_doublefault...\t");
+    serial_print!("doublefault::doublefault...\t");
 
     fusarium::gdt::init();
     init_test_idt();
 
     // trigger a stack overflow
-    should_fail_doublefault();
+    doublefault();
 
     panic!("Execution continued after stack overflow");
 }
@@ -54,7 +54,7 @@ fn panic(info: &PanicInfo) -> ! {
     fusarium::test_panic_handler(info)
 }
 
-fn should_fail_doublefault() {
+fn doublefault() {
     // returns a 0 error_code, not sure how to test it yet
     #[cfg(target_arch = "x86_64")]
     unsafe {

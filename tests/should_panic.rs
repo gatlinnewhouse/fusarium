@@ -13,8 +13,7 @@ fn should_fail() {
 fn panic(_info: &PanicInfo) -> ! {
     serial_println!("[ok]");
     exit_qemu(QemuExitCode::Success);
-    #[allow(clippy::empty_loop)]
-    loop {}
+    fusarium::hlt_loop();
 }
 
 #[no_mangle]
