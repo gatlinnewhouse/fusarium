@@ -2,6 +2,7 @@
 name = "fusarium"
 version = "0.1.0"
 edition = "2018"
+authors = ["Gatlin Newhouse"]
 
 [dependencies]
 bootloader = { version = "0.9" }
