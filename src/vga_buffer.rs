@@ -182,7 +182,7 @@ fn page_read_println() {
 
     // read from a code page
     unsafe {
-        let x = *ptr;
+        let _x = *ptr;
     }
 
     let s = "read worked";
