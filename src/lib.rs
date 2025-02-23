@@ -46,6 +46,7 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     loop {}
 }
 
+#[cfg(target_arch = "x86_64")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[repr(u32)]
 pub enum QemuExitCode {
@@ -53,8 +54,8 @@ pub enum QemuExitCode {
     Failed = 0x11,
 }
 
-#[cfg(target_arch = "x86_64")]
 pub fn exit_qemu(exit_code: QemuExitCode) {
+    #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::port::Port;
 
     unsafe {
@@ -67,6 +68,7 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
+    init();
     test_main();
     #[allow(clippy::empty_loop)]
     loop {}
@@ -76,4 +78,11 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     test_panic_handler(info)
+}
+
+#[test_case]
+fn test_breakpoint_exception() {
+    // invoke a breakpoint exception
+    #[cfg(target_arch = "x86_64")]
+    x86_64::instructions::interrupts::int3();
 }
