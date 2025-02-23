@@ -10,6 +10,11 @@ lazy_static = { version = "1.0", features = ["spin_no_std"] }
 spin = { version = "0.5.2" }
 x86_64 = { version = "0.14.2" }
 uart_16550 = { version = "0.2.0" }
+pic8259 = { version = "0.10.1", optional = true }
+
+[features]
+default = ["pic8259"]
+pic8259 = ["dep:pic8259"]
 
 [profile.dev]
 panic = "abort"
