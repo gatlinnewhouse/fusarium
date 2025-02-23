@@ -34,5 +34,9 @@ name = "should_panic"
 harness = false
 
 [[test]]
-name = "doublefetch"
+name = "doublefault"
+harness = false
+
+[[test]]
+name = "stack_overflow"
 harness = false
