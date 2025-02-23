@@ -47,5 +47,9 @@ name = "doublefault"
 harness = false
 
 [[test]]
+name = "pagefault"
+harness = false
+
+[[test]]
 name = "stack_overflow"
 harness = false
