@@ -1,5 +1,6 @@
 [build]
 target = "x86_64-fusarium.json"
+#target = "arm-fusarium.json"
 
 [unstable]
 build-std-features = ["compiler-builtins-mem"]

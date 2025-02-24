@@ -20,6 +20,8 @@ linked_list_allocator = { version = "0.9.0" }
 [features]
 default = ["pic8259"]
 pic8259 = ["dep:pic8259"]
+x86 = []
+arm = []
 
 [profile.dev]
 panic = "abort"
