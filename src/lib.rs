@@ -6,7 +6,9 @@
 #![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
+extern crate alloc;
 
+pub mod allocator;
 pub mod gdt;
 pub mod interrupts;
 pub mod memory;
