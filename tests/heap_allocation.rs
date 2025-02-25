@@ -21,8 +21,8 @@ fn main(boot_info: &'static BootInfo) -> ! {
 
     fusarium::init();
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { memory::init(phys_mem_offset) };
-    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
+    let mut mapper = memory::init(phys_mem_offset);
+    let mut frame_allocator = BootInfoFrameAllocator::init(&boot_info.memory_map);
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     test_main();
