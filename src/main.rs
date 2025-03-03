@@ -11,9 +11,13 @@ extern crate alloc;
 
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
+#[cfg(feature = "exec-mine")]
+use fusarium::task::executor::Executor;
+#[cfg(feature = "exec-simple")]
+use fusarium::task::simple_executor::SimpleExecutor;
 use fusarium::{
     println,
-    task::{simple_executor::SimpleExecutor, Task},
+    task::{keyboard, Task},
 };
 
 entry_point!(kernel_main);
@@ -36,9 +40,15 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let mut frame_allocator = BootInfoFrameAllocator::init(&boot_info.memory_map);
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
-    // Test asynchronous runtime
+    // Initialize an async executor
+    #[cfg(feature = "exec-simple")]
     let mut executor = SimpleExecutor::new();
+    #[cfg(feature = "exec-mine")]
+    let mut executor = Executor::new();
+
+    // Test asynchronous runtime
     executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
 
     #[cfg(test)]
