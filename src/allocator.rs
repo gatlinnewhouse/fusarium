@@ -1,5 +1,7 @@
 #[cfg(feature = "alloc-bump")]
 use bump::BumpAllocator;
+#[cfg(feature = "alloc-fixed-block")]
+use fixed_size_block::FixedSizeBlockAllocator;
 #[cfg(feature = "alloc-my-free-list")]
 use linked_list::LinkedListAllocator;
 #[cfg(feature = "alloc-linked-list")]
@@ -14,6 +16,8 @@ use x86_64::{
 
 #[cfg(feature = "alloc-bump")]
 pub mod bump;
+#[cfg(feature = "alloc-fixed-block")]
+pub mod fixed_size_block;
 #[cfg(feature = "alloc-my-free-list")]
 pub mod linked_list;
 
@@ -45,6 +49,10 @@ static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
 #[cfg(feature = "alloc-my-free-list")]
 #[global_allocator]
 static ALLOCATOR: Locked<LinkedListAllocator> = Locked::new(LinkedListAllocator::new());
+
+#[cfg(feature = "alloc-fixed-block")]
+#[global_allocator]
+static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
 
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
