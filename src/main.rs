@@ -31,6 +31,7 @@ fn kernel_main() -> ! {
     use fusarium::allocator;
     fusarium::init();
     allocator::init_heap();
+    println!("HELLO WORLD");
     fusarium::hlt_loop();
 }
 

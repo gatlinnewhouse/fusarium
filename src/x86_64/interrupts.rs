@@ -1,24 +1,19 @@
 use crate::{gdt, hlt_loop, print, println};
 use lazy_static::lazy_static;
-#[cfg(feature = "pic8259")]
 use pic8259::ChainedPics;
 use spin;
 
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
 
-#[cfg(feature = "pic8259")]
 pub const PIC_1_OFFSET: u8 = 32;
-#[cfg(feature = "pic8259")]
 pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
 
-#[cfg(feature = "pic8259")]
 pub static PICS: spin::Mutex<ChainedPics> =
     spin::Mutex::new(unsafe { ChainedPics::new(PIC_1_OFFSET, PIC_2_OFFSET) });
 
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum InterruptIndex {
-    #[cfg(feature = "pic8259")]
     Timer = PIC_1_OFFSET,
     Keyboard,
 }
@@ -53,7 +48,6 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
     let scancode: u8 = unsafe { port.read() };
     crate::task::keyboard::add_scancode(scancode);
 
-    #[cfg(feature = "pic8259")]
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
@@ -85,7 +79,6 @@ pub fn init_idt() {
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
     print!(".");
 
-    #[cfg(feature = "pic8259")]
     unsafe {
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Timer.as_u8());

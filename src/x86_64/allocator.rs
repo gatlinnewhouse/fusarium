@@ -1,3 +1,4 @@
+#[cfg(not(feature = "alloc-linked-list"))]
 use super::Locked;
 #[cfg(feature = "alloc-bump")]
 use bump::BumpAllocator;
