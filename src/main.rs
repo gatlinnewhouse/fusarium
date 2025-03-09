@@ -19,23 +19,9 @@ use fusarium::task::executor::Executor;
 use fusarium::task::simple_executor::SimpleExecutor;
 #[cfg(not(test))]
 use fusarium::task::{keyboard, Task};
-#[cfg(target_arch = "arm")]
-use rpi::main;
 
-#[cfg(target_arch = "x86_64")]
 entry_point!(kernel_main);
 
-#[cfg(target_arch = "arm")]
-#[main]
-fn kernel_main() -> ! {
-    use fusarium::allocator;
-    fusarium::init();
-    allocator::init_heap();
-    println!("HELLO WORLD");
-    fusarium::hlt_loop();
-}
-
-#[cfg(target_arch = "x86_64")]
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // Import allocator and memory types
     use fusarium::allocator;

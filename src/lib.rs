@@ -10,11 +10,6 @@ use core::arch::asm;
 use core::panic::PanicInfo;
 extern crate alloc;
 
-#[cfg(target_arch = "arm")]
-#[path = "armv6a/allocator.rs"]
-pub mod allocator;
-#[cfg(target_arch = "x86_64")]
-#[path = "x86_64/allocator.rs"]
 pub mod allocator;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/gdt.rs"]
@@ -37,10 +32,6 @@ pub fn init() {
         unsafe { interrupts::PICS.lock().initialize() };
         x86_64::instructions::interrupts::enable();
     }
-    #[cfg(target_arch = "arm")]
-    unsafe {
-        rpi::interrupt::enable();
-    }
 }
 
 pub fn hlt_loop() -> ! {
@@ -51,23 +42,6 @@ pub fn hlt_loop() -> ! {
         unsafe {
             asm!("wfi");
         }
-    }
-}
-
-/// A wrapper around spin::Mutex to permit trait implementations.
-pub struct Locked<A> {
-    inner: spin::Mutex<A>,
-}
-
-impl<A> Locked<A> {
-    pub const fn new(inner: A) -> Self {
-        Locked {
-            inner: spin::Mutex::new(inner),
-        }
-    }
-
-    pub fn lock(&self) -> spin::MutexGuard<A> {
-        self.inner.lock()
     }
 }
 

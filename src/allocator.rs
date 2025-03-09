@@ -1,5 +1,3 @@
-#[cfg(not(feature = "alloc-linked-list"))]
-use super::Locked;
 #[cfg(feature = "alloc-bump")]
 use bump::BumpAllocator;
 #[cfg(feature = "alloc-fixed-block")]
@@ -16,34 +14,57 @@ use x86_64::{
 };
 
 #[cfg(feature = "alloc-bump")]
-#[path = "../allocator/bump.rs"]
 pub mod bump;
 #[cfg(feature = "alloc-fixed-block")]
-#[path = "../allocator/fixed_size_block.rs"]
 pub mod fixed_size_block;
 #[cfg(feature = "alloc-my-free-list")]
-#[path = "../allocator/linked_list.rs"]
 pub mod linked_list;
+
+/// A wrapper around spin::Mutex to permit trait implementations.
+#[cfg(not(feature = "alloc-linked-list"))]
+pub struct Locked<A> {
+    inner: spin::Mutex<A>,
+}
+
+#[cfg(not(feature = "alloc-linked-list"))]
+impl<A> Locked<A> {
+    pub const fn new(inner: A) -> Self {
+        Locked {
+            inner: spin::Mutex::new(inner),
+        }
+    }
+
+    pub fn lock(&self) -> spin::MutexGuard<A> {
+        self.inner.lock()
+    }
+}
+
+#[cfg(all(target_arch = "x86_64", feature = "alloc-bump"))]
+#[global_allocator]
+static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
+
+#[cfg(all(target_arch = "x86_64", feature = "alloc-fixed-block"))]
+#[global_allocator]
+static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
 
 #[cfg(feature = "alloc-linked-list")]
 #[global_allocator]
 static ALLOCATOR: LockedHeap = LockedHeap::empty();
 
-#[cfg(feature = "alloc-bump")]
-#[global_allocator]
-static ALLOCATOR: Locked<BumpAllocator> = Locked::new(BumpAllocator::new());
-
-#[cfg(feature = "alloc-my-free-list")]
+#[cfg(all(target_arch = "x86_64", feature = "alloc-my-free-list"))]
 #[global_allocator]
 static ALLOCATOR: Locked<LinkedListAllocator> = Locked::new(LinkedListAllocator::new());
 
-#[cfg(feature = "alloc-fixed-block")]
-#[global_allocator]
-static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
-
-#[cfg(any(feature = "alloc-linked-list", feature = "alloc-fixed-block"))]
+#[cfg(all(
+    target_arch = "x86_64",
+    any(feature = "alloc-linked-list", feature = "alloc-fixed-block")
+))]
 pub const HEAP_START: *mut u8 = 0x_4444_4444_0000 as *mut u8;
-#[cfg(all(not(feature = "alloc-linked-list"), not(feature = "alloc-fixed-block")))]
+#[cfg(all(
+    target_arch = "x86_64",
+    not(feature = "alloc-linked-list"),
+    not(feature = "alloc-fixed-block")
+))]
 pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
 
