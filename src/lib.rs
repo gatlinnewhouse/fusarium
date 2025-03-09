@@ -5,12 +5,13 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 
-#[cfg(target_arch = "arm")]
-use core::arch::asm;
 use core::panic::PanicInfo;
-extern crate alloc;
 
+#[cfg(target_arch = "x86_64")]
 pub mod allocator;
+#[cfg(target_arch = "arm")]
+#[path = "armv6a/boot.rs"]
+pub mod boot;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/gdt.rs"]
 pub mod gdt;
@@ -21,7 +22,9 @@ pub mod interrupts;
 #[path = "x86_64/memory.rs"]
 pub mod memory;
 pub mod serial;
+#[cfg(target_arch = "x86_64")]
 pub mod task;
+#[cfg(target_arch = "x86_64")]
 pub mod vga_buffer;
 
 pub fn init() {
@@ -39,9 +42,7 @@ pub fn hlt_loop() -> ! {
         #[cfg(target_arch = "x86_64")]
         x86_64::instructions::hlt();
         #[cfg(target_arch = "arm")]
-        unsafe {
-            asm!("wfi");
-        }
+        aarch64_cpu::asm::wfe();
     }
 }
 
@@ -122,7 +123,5 @@ fn test_breakpoint_exception() {
     #[cfg(target_arch = "x86_64")]
     x86_64::instructions::interrupts::int3();
     #[cfg(target_arch = "arm")]
-    unsafe {
-        asm!("BKPT ", 0)
-    }
+    aarch64_cpu::asm::bkpt();
 }

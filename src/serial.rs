@@ -1,3 +1,6 @@
+#[cfg(target_arch = "arm")]
+use core::fmt::Result;
+use core::fmt::Write;
 use lazy_static::lazy_static;
 use spin::Mutex;
 #[cfg(target_arch = "x86_64")]
@@ -12,10 +15,28 @@ lazy_static! {
     };
 }
 
+#[cfg(target_arch = "arm")]
+pub(crate) struct QEMUOutput;
+
+#[cfg(target_arch = "arm")]
+impl Write for QEMUOutput {
+    fn write_str(&mut self, s: &str) -> Result {
+        for c in s.chars() {
+            unsafe {
+                core::ptr::write_volatile(0x3F20_1000 as *mut u8, c as u8);
+            }
+        }
+        Ok(())
+    }
+}
+
+#[cfg(target_arch = "arm")]
+lazy_static! {
+    pub(crate) static ref SERIAL1: Mutex<QEMUOutput> = Mutex::new(QEMUOutput {});
+}
+
 #[doc(hidden)]
 pub fn _print(args: ::core::fmt::Arguments) {
-    use core::fmt::Write;
-
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::interrupts;
 
@@ -26,6 +47,12 @@ pub fn _print(args: ::core::fmt::Arguments) {
             .write_fmt(args)
             .expect("Printing to serial failed");
     });
+
+    #[cfg(target_arch = "arm")]
+    SERIAL1
+        .lock()
+        .write_fmt(args)
+        .expect("Printing to serial failed");
 }
 
 #[macro_export]

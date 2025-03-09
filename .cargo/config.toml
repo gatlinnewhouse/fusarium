@@ -1,6 +1,6 @@
 [build]
-target = "x86_64-fusarium.json"
-#target = "armv6a-fusarium.json"
+#target = "x86_64-fusarium.json"
+target = "armv6a-fusarium.json"
 
 [unstable]
 build-std = ["alloc", "core", "compiler_builtins"]

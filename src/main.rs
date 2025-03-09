@@ -1,5 +1,5 @@
-#![no_std]
 #![no_main]
+#![no_std]
 //#![warn(missing_docs)]
 //#![warn(clippy::cargo)]
 #![warn(clippy::pedantic)]
@@ -7,21 +7,35 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(fusarium::test_runner)]
 #![reexport_test_harness_main = "test_main"]
-extern crate alloc;
+//extern crate alloc;
 
 #[cfg(target_arch = "x86_64")]
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
+#[cfg(target_arch = "x86_64")]
 use fusarium::println;
-#[cfg(all(feature = "exec-mine", not(test)))]
+#[cfg(all(target_arch = "x86_64", feature = "exec-mine", not(test)))]
 use fusarium::task::executor::Executor;
-#[cfg(all(feature = "exec-simple", not(test)))]
+#[cfg(all(target_arch = "x86_64", feature = "exec-simple", not(test)))]
 use fusarium::task::simple_executor::SimpleExecutor;
-#[cfg(not(test))]
+#[cfg(all(target_arch = "x86_64", not(test)))]
 use fusarium::task::{keyboard, Task};
+#[cfg(target_arch = "arm")]
+use rpi::main;
 
+#[cfg(target_arch = "arm")]
+#[main]
+fn kernel_init() -> ! {
+    use fusarium::serial_println;
+
+    serial_println!("Hello from Rust!");
+    panic!("Stopping");
+}
+
+#[cfg(target_arch = "x86_64")]
 entry_point!(kernel_main);
 
+#[cfg(target_arch = "x86_64")]
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // Import allocator and memory types
     use fusarium::allocator;
@@ -62,22 +76,61 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     fusarium::hlt_loop();
 }
 
-#[cfg(not(test))]
+#[cfg(all(target_arch = "x86_64", not(test)))]
 async fn async_number() -> u32 {
     42
 }
 
-#[cfg(not(test))]
+#[cfg(all(target_arch = "x86_64", not(test)))]
 async fn example_task() {
     let number = async_number().await;
     println!("async number: {}", number);
 }
 
 /// This function is called on panic.
-#[cfg(not(test))]
+#[cfg(all(target_arch = "x86_64", not(test)))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
+    fusarium::hlt_loop();
+}
+
+#[cfg(all(target_arch = "arm", not(test)))]
+fn panic_prevent_reenter() {
+    use core::sync::atomic::{AtomicBool, Ordering};
+
+    static PANIC_IN_PROGRESS: AtomicBool = AtomicBool::new(false);
+
+    if !PANIC_IN_PROGRESS.load(Ordering::Relaxed) {
+        PANIC_IN_PROGRESS.store(true, Ordering::Relaxed);
+
+        return;
+    }
+
+    fusarium::hlt_loop();
+}
+
+#[cfg(all(target_arch = "arm", not(test)))]
+#[panic_handler]
+fn panic(info: &PanicInfo) -> ! {
+    use fusarium::serial_println;
+    panic_prevent_reenter();
+
+    let (location, line, column) = match info.location() {
+        Some(loc) => (loc.file(), loc.line(), loc.column()),
+        _ => ("???", 0, 0),
+    };
+
+    serial_println!(
+        "Kernel panic!\n\n\
+        Panic location:\n      File '{}', line {}, column {}\n\n\
+        {}",
+        location,
+        line,
+        column,
+        info.message()
+    );
+
     fusarium::hlt_loop();
 }
 
