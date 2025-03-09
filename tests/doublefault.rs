@@ -2,6 +2,7 @@
 #![no_main]
 #![feature(abi_x86_interrupt)]
 
+#[cfg(target_arch = "x86_64")]
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use fusarium::{exit_qemu, serial_print, serial_println, QemuExitCode};

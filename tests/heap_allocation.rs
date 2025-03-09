@@ -7,6 +7,7 @@
 extern crate alloc;
 
 use alloc::{boxed::Box, vec::Vec};
+#[cfg(target_arch = "x86_64")]
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use fusarium::allocator::HEAP_SIZE;

@@ -4,6 +4,7 @@
 #![test_runner(fusarium::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+#[cfg(target_arch = "x86_64")]
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 

@@ -1,6 +1,7 @@
 #![no_std]
 #![no_main]
 
+#[cfg(target_arch = "x86_64")]
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use fusarium::exit_qemu;

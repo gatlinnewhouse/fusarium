@@ -1,8 +1,11 @@
 use alloc::boxed::Box;
+#[cfg(target_arch = "arm")]
+use core::sync::atomic::{AtomicU32, Ordering};
+#[cfg(target_arch = "x86_64")]
+use core::sync::atomic::{AtomicU64, Ordering};
 use core::{
     future::Future,
     pin::Pin,
-    sync::atomic::{AtomicU64, Ordering},
     task::{Context, Poll},
 };
 
@@ -18,7 +21,10 @@ struct TaskId(u64);
 impl TaskId {
     /// New unique ID for a task to prevent CPU hogging
     fn new() -> Self {
+        #[cfg(target_arch = "x86_64")]
         static NEXT_ID: AtomicU64 = AtomicU64::new(0);
+        #[cfg(target_arch = "arm")]
+        static NEXT_ID: AtomicU32 = AtomicU32::new(0);
         TaskId(NEXT_ID.fetch_add(1, Ordering::Relaxed))
     }
 }

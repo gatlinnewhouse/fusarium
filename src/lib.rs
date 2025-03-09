@@ -69,6 +69,14 @@ pub enum QemuExitCode {
     Failed = 0x11,
 }
 
+#[cfg(target_arch = "arm")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum QemuExitCode {
+    Success = 0x10,
+    Failed = 0x11,
+}
+
 pub fn exit_qemu(exit_code: QemuExitCode) {
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::port::Port;
@@ -79,7 +87,7 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     }
 }
 
-#[cfg(test)]
+#[cfg(all(test, target_arch = "x86_64"))]
 use bootloader::{entry_point, BootInfo};
 
 #[cfg(test)]

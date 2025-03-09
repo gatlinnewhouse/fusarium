@@ -1,3 +1,4 @@
+#[cfg(target_arch = "x86_64")]
 use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
 #[cfg(target_arch = "x86_64")]
 use x86_64::{
@@ -73,6 +74,7 @@ pub fn create_example_mapping(
     mapper: &mut OffsetPageTable,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
 ) {
+    #[cfg(target_arch = "x86_64")]
     use x86_64::structures::paging::PageTableFlags as Flags;
 
     let frame = PhysFrame::containing_address(PhysAddr::new(0xb8000));
