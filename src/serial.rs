@@ -1,5 +1,5 @@
 #[cfg(target_arch = "arm")]
-use arm_pl011_uart::{OwnedMmioPointer, Uart};
+use arm_pl011_uart::{DataBits, LineConfig, OwnedMmioPointer, Parity, StopBits, Uart};
 use core::fmt::Write;
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -18,13 +18,23 @@ lazy_static! {
 #[cfg(target_arch = "arm")]
 lazy_static! {
     pub static ref SERIAL1: Mutex<Uart<'static>> = {
-        let serial_port = unsafe {
+        let mut serial_port = unsafe {
             Uart::new(OwnedMmioPointer::new(
                 core::ptr::NonNull::new(crate::memory::map::mmio::PL011_UART_START as *mut _)
-                    .unwrap(),
+                    .expect("Unable to take serial port"),
             ))
         };
-        //serial_port.enable(config, baud_rate, sysclk);
+        // Baud rate and sysclock found here:
+        // https://github.com/thanoskoutr/armOS/blob/6ae7f6bf5a5e812a35e731fc95e29e2cc1e3e7a8/src/kernel/uart.c#L86
+        // Parity, data, and stop bits found here
+        // https://krinkinmu.github.io/2020/11/29/PL011.html
+        //
+        // Already enabled??? Does not work with this config for QEMU
+        //serial_port.enable(LineConfig {
+        //    parity: Parity::None,
+        //    data_bits: DataBits::Bits8,
+        //    stop_bits: StopBits::One,
+        //}, 115200, 270).expect("Unable to enable serial port");
         Mutex::new(serial_port)
     };
 }
