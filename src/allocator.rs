@@ -6,6 +6,7 @@ use fixed_size_block::FixedSizeBlockAllocator;
 use linked_list::LinkedListAllocator;
 #[cfg(feature = "alloc-linked-list")]
 use linked_list_allocator::LockedHeap;
+#[cfg(target_arch = "x86_64")]
 use x86_64::{
     structures::paging::{
         mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB,

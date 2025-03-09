@@ -1,5 +1,5 @@
 #[cfg(target_arch = "arm")]
-use core::fmt::Result;
+use crate::serial_console::QEMUOutput;
 use core::fmt::Write;
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -15,32 +15,9 @@ lazy_static! {
     };
 }
 
-//lazy_static! {
-//    pub static ref SERIAL1: Mutex<Uart> = {
-//        let mut serial_port = unsafe { arm_pl011_uart::OwnedMmioPointer::new(arm_pl011_uart::PL011Registers::) };
-//        serial_port.init();
-//        Mutex::new(serial_port)
-//    };
-//}
-
-#[cfg(target_arch = "arm")]
-pub(crate) struct QEMUOutput;
-
-#[cfg(target_arch = "arm")]
-impl Write for QEMUOutput {
-    fn write_str(&mut self, s: &str) -> Result {
-        for c in s.chars() {
-            unsafe {
-                core::ptr::write_volatile(crate::memory::UART_BASE as *mut u8, c as u8);
-            }
-        }
-        Ok(())
-    }
-}
-
 #[cfg(target_arch = "arm")]
 lazy_static! {
-    pub(crate) static ref SERIAL1: Mutex<QEMUOutput> = Mutex::new(QEMUOutput {});
+    pub static ref SERIAL1: Mutex<QEMUOutput> = Mutex::new(QEMUOutput::new());
 }
 
 #[doc(hidden)]
