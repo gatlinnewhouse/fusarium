@@ -5,6 +5,7 @@ core::arch::global_asm!(include_str!("boot.s"), options(raw));
 pub extern "C" fn first_stage() -> ! {
     // Safety: This value is provided by the linker script.
     unsafe extern "C" {
+        //TODO: fix this to use dtb/etc
         #[link_name = "__physical_load_address"]
         static LOAD_ADDRESS: u8;
     }

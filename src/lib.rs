@@ -18,6 +18,9 @@ pub mod gdt;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/interrupts.rs"]
 pub mod interrupts;
+#[cfg(target_arch = "arm")]
+#[path = "armv6a/memory.rs"]
+pub mod memory;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/memory.rs"]
 pub mod memory;
