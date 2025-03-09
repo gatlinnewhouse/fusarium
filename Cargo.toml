@@ -34,10 +34,10 @@ default-features = false
 features = ["alloc"]
 
 [features]
-default = ["x86"]
+default = ["pico-zero-w"]
 
 # Hardware targets
-x86 = [
+x86_64-qemu = [
   "alloc-linked-list",
   "exec-mine",
   "pic8259",
