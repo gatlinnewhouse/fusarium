@@ -12,6 +12,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "arm-pl011-uart"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fc2d83c175765fcbec10238b309ebe937247e938d3a9efcb32a96e69502a04e"
+dependencies = [
+ "bitflags 2.9.0",
+ "embedded-hal-nb",
+ "embedded-io",
+ "safe-mmio",
+ "thiserror",
+ "zerocopy",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -234,6 +248,7 @@ name = "fusarium"
 version = "0.1.0"
 dependencies = [
  "aarch64-cpu",
+ "arm-pl011-uart",
  "bootloader",
  "conquer-once",
  "crossbeam-queue",
@@ -244,7 +259,6 @@ dependencies = [
  "pc-keyboard",
  "pic8259",
  "rpi",
- "rppal",
  "spin",
  "uart_16550",
  "volatile 0.2.7",
@@ -411,19 +425,16 @@ dependencies = [
 ]
 
 [[package]]
-name = "rppal"
-version = "0.22.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c1ce3b019009cff02cb6b0e96e7cc2e5c5b90187dc1a490f8ef1521d0596b026"
-dependencies = [
- "libc",
-]
-
-[[package]]
 name = "rustversion"
 version = "1.0.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eded382c5f5f786b989652c49544c4877d9f015cc22e145a5ea8ea66c2921cd2"
+
+[[package]]
+name = "safe-mmio"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "30075950f15d2083592cdb9b5b175d48d332dacdc481c17546910e0c1e9cc4b1"
 
 [[package]]
 name = "scopeguard"
@@ -491,6 +502,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "thiserror"
+version = "2.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "567b8a2dae586314f7be2a752ec7474332959c6460e02bde30d702a66d488708"
+dependencies = [
+ "thiserror-impl",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "2.0.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f7cf42b4507d8ea322120659672cf1b9dbb93f8f2d4ecfd6e51350ff5b17a1d"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.99",
+]
+
+[[package]]
 name = "tock-registers"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -541,4 +572,24 @@ dependencies = [
  "bitflags 2.9.0",
  "rustversion",
  "volatile 0.4.6",
+]
+
+[[package]]
+name = "zerocopy"
+version = "0.8.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fd97444d05a4328b90e75e503a34bad781f14e28a823ad3557f0750df1ebcbc6"
+dependencies = [
+ "zerocopy-derive",
+]
+
+[[package]]
+name = "zerocopy-derive"
+version = "0.8.23"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6352c01d0edd5db859a63e2605f4ea3183ddbd15e2c4a9e7d32184df75e4f154"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.99",
 ]

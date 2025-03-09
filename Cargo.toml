@@ -31,11 +31,10 @@ features = ["alloc"]
 # Target specific dependencies
 [target.'cfg(target_arch = "arm")'.dependencies]
 aarch64-cpu = { version = "10.0.0" }
-#arm-pl011-uart = { version = "0.2.0", default-features = false }
+arm-pl011-uart = { version = "0.2.0", features = [] }
 #critical-section = { version = "1.2.0", features = ["restore-state-bool"] }
 embedded-alloc = { version = "0.6.0", default-features = false }
 rpi = { path = "./deps/rpi-devenv" }
-rppal = { version = "0.22.1" }
 
 [target.'cfg(target_arch = "x86_64")'.dependencies]
 bootloader = { version = "0.9", features = ["map_physical_memory"] }

@@ -1,5 +1,5 @@
 #[cfg(target_arch = "arm")]
-use crate::serial_console::QEMUOutput;
+use arm_pl011_uart::{OwnedMmioPointer, Uart};
 use core::fmt::Write;
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -17,7 +17,16 @@ lazy_static! {
 
 #[cfg(target_arch = "arm")]
 lazy_static! {
-    pub static ref SERIAL1: Mutex<QEMUOutput> = Mutex::new(QEMUOutput::new());
+    pub static ref SERIAL1: Mutex<Uart<'static>> = {
+        let serial_port = unsafe {
+            Uart::new(OwnedMmioPointer::new(
+                core::ptr::NonNull::new(crate::memory::map::mmio::PL011_UART_START as *mut _)
+                    .unwrap(),
+            ))
+        };
+        //serial_port.enable(config, baud_rate, sysclk);
+        Mutex::new(serial_port)
+    };
 }
 
 #[doc(hidden)]

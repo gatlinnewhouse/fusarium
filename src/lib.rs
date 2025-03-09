@@ -25,9 +25,6 @@ pub mod memory;
 #[path = "x86_64/memory.rs"]
 pub mod memory;
 pub mod serial;
-#[cfg(target_arch = "arm")]
-#[path = "armv6a/console.rs"]
-pub mod serial_console;
 #[cfg(target_arch = "x86_64")]
 pub mod task;
 #[cfg(target_arch = "x86_64")]
