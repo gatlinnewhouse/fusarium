@@ -21,8 +21,14 @@ use fusarium::{
     task::{keyboard, Task},
 };
 
+#[cfg(target_arch = "x86_64")]
 entry_point!(kernel_main);
 
+#[cfg(target_arch = "arm")]
+#[main]
+fn kernel_main() -> ! {}
+
+#[cfg(target_arch = "x86_64")]
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     // Import allocator and memory types
     use fusarium::allocator;

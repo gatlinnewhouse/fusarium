@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 #[cfg(feature = "pic8259")]
 use pic8259::ChainedPics;
 use spin;
-#[cfg(target_arch = "x86_64")]
+
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame, PageFaultErrorCode};
 
 #[cfg(feature = "pic8259")]
@@ -33,7 +33,6 @@ impl InterruptIndex {
     }
 }
 
-#[cfg(target_arch = "x86_64")]
 extern "x86-interrupt" fn page_fault_handler(
     stack_frame: InterruptStackFrame,
     error_code: PageFaultErrorCode,
@@ -47,7 +46,6 @@ extern "x86-interrupt" fn page_fault_handler(
     hlt_loop();
 }
 
-#[cfg(target_arch = "x86_64")]
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
     use x86_64::instructions::port::Port;
 
@@ -62,7 +60,6 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
     }
 }
 
-#[cfg(target_arch = "x86_64")]
 lazy_static! {
     static ref IDT: InterruptDescriptorTable = {
         let mut idt = InterruptDescriptorTable::new();
@@ -85,7 +82,6 @@ pub fn init_idt() {
     IDT.load();
 }
 
-#[cfg(target_arch = "x86_64")]
 extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
     print!(".");
 
@@ -96,12 +92,10 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
     }
 }
 
-#[cfg(target_arch = "x86_64")]
 extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
     println!("EXCEPTION: BREAKPOINT\n{:#?}", stack_frame);
 }
 
-#[cfg(target_arch = "x86_64")]
 extern "x86-interrupt" fn double_fault_handler(
     stack_frame: InterruptStackFrame,
     _error_code: u64,

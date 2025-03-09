@@ -1,5 +1,4 @@
 use lazy_static::lazy_static;
-#[cfg(target_arch = "x86_64")]
 use x86_64::{
     structures::{
         gdt::{Descriptor, GlobalDescriptorTable, SegmentSelector},
@@ -10,7 +9,6 @@ use x86_64::{
 
 pub const DOUBLE_FAULT_IST_INDEX: u16 = 0;
 
-#[cfg(target_arch = "x86_64")]
 lazy_static! {
     static ref TSS: TaskStateSegment = {
         let mut tss = TaskStateSegment::new();
@@ -25,7 +23,6 @@ lazy_static! {
     };
 }
 
-#[cfg(target_arch = "x86_64")]
 lazy_static! {
     static ref GDT: (GlobalDescriptorTable, Selectors) = {
         let mut gdt = GlobalDescriptorTable::new();
@@ -46,7 +43,6 @@ struct Selectors {
     tss_selector: SegmentSelector,
 }
 
-#[cfg(target_arch = "x86_64")]
 pub fn init() {
     use x86_64::instructions::segmentation::{Segment, CS};
     use x86_64::instructions::tables::load_tss;
