@@ -12,21 +12,25 @@ extern crate alloc;
 #[cfg(target_arch = "x86_64")]
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
-#[cfg(feature = "exec-mine")]
+use fusarium::println;
+#[cfg(all(feature = "exec-mine", not(test)))]
 use fusarium::task::executor::Executor;
-#[cfg(feature = "exec-simple")]
+#[cfg(all(feature = "exec-simple", not(test)))]
 use fusarium::task::simple_executor::SimpleExecutor;
-use fusarium::{
-    println,
-    task::{keyboard, Task},
-};
+#[cfg(not(test))]
+use fusarium::task::{keyboard, Task};
+#[cfg(target_arch = "arm")]
+use rpi::main;
 
 #[cfg(target_arch = "x86_64")]
 entry_point!(kernel_main);
 
 #[cfg(target_arch = "arm")]
 #[main]
-fn kernel_main() -> ! {}
+fn kernel_main() -> ! {
+    fusarium::init();
+    fusarium::hlt_loop();
+}
 
 #[cfg(target_arch = "x86_64")]
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
@@ -48,17 +52,20 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 
     // Initialize an async executor
-    #[cfg(feature = "exec-simple")]
+    #[cfg(all(feature = "exec-simple", not(test)))]
     let mut executor = SimpleExecutor::new();
-    #[cfg(feature = "exec-mine")]
+    #[cfg(all(feature = "exec-mine", not(test)))]
     let mut executor = Executor::new();
 
     #[cfg(test)]
     test_main();
 
     // Test asynchronous runtime
+    #[cfg(not(test))]
     executor.spawn(Task::new(example_task()));
+    #[cfg(not(test))]
     executor.spawn(Task::new(keyboard::print_keypresses()));
+    #[cfg(not(test))]
     executor.run();
 
     // Status debug print
@@ -66,10 +73,12 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     fusarium::hlt_loop();
 }
 
+#[cfg(not(test))]
 async fn async_number() -> u32 {
     42
 }
 
+#[cfg(not(test))]
 async fn example_task() {
     let number = async_number().await;
     println!("async number: {}", number);

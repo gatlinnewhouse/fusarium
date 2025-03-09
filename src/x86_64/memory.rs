@@ -1,6 +1,4 @@
-#[cfg(target_arch = "x86_64")]
 use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
-#[cfg(target_arch = "x86_64")]
 use x86_64::{
     structures::paging::{
         FrameAllocator, Mapper, OffsetPageTable, Page, PageTable, PhysFrame, Size4KiB,
@@ -74,7 +72,6 @@ pub fn create_example_mapping(
     mapper: &mut OffsetPageTable,
     frame_allocator: &mut impl FrameAllocator<Size4KiB>,
 ) {
-    #[cfg(target_arch = "x86_64")]
     use x86_64::structures::paging::PageTableFlags as Flags;
 
     let frame = PhysFrame::containing_address(PhysAddr::new(0xb8000));
@@ -94,7 +91,6 @@ pub fn create_example_mapping(
 /// `physical_memory_offset`. Also, this function must be only called once
 /// to avoid aliasing `&mut` references (which is undefined behavior).
 fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut PageTable {
-    #[cfg(target_arch = "x86_64")]
     use x86_64::registers::control::Cr3;
 
     let (level_4_table_frame, _) = Cr3::read();
@@ -122,9 +118,7 @@ pub fn translate_addr(addr: VirtAddr, physical_memory_offset: VirtAddr) -> Optio
 /// the whole body of unsafe functions as an unsafe block. This function must
 /// only be reachable through `unsafe fn` from outside of this module.
 fn translate_addr_inner(addr: VirtAddr, physical_memory_offset: VirtAddr) -> Option<PhysAddr> {
-    #[cfg(target_arch = "x86_64")]
     use x86_64::registers::control::Cr3;
-    #[cfg(target_arch = "x86_64")]
     use x86_64::structures::paging::page_table::FrameError;
 
     // read the active level 4 frame from the CR3 register

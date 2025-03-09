@@ -13,6 +13,8 @@ use core::{
 };
 extern crate alloc;
 
+#[cfg(target_arch = "x86_64")]
+#[path = "x86_64/allocator.rs"]
 pub mod allocator;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/gdt.rs"]
@@ -20,15 +22,17 @@ pub mod gdt;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/interrupts.rs"]
 pub mod interrupts;
+#[cfg(target_arch = "x86_64")]
+#[path = "x86_64/memory.rs"]
 pub mod memory;
 pub mod serial;
 pub mod task;
 pub mod vga_buffer;
 
 pub fn init() {
-    gdt::init();
     #[cfg(target_arch = "x86_64")]
     {
+        gdt::init();
         interrupts::init_idt();
         unsafe { interrupts::PICS.lock().initialize() };
         x86_64::instructions::interrupts::enable();
@@ -103,7 +107,7 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
 #[cfg(all(test, target_arch = "x86_64"))]
 use bootloader::{entry_point, BootInfo};
 
-#[cfg(test)]
+#[cfg(all(test, target_arch = "x86_64"))]
 entry_point!(test_kernel_main);
 
 /// Entry point for `cargo test`

@@ -20,6 +20,7 @@ pub fn _print(args: fmt::Arguments) {
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::interrupts;
 
+    #[cfg(target_arch = "x86_64")]
     interrupts::without_interrupts(|| {
         WRITER.lock().write_fmt(args).unwrap();
     });
@@ -162,6 +163,7 @@ fn test_println_output() {
     use x86_64::instructions::interrupts;
 
     let s = "Some test string that fits on a single line";
+    #[cfg(target_arch = "x86_64")]
     interrupts::without_interrupts(|| {
         let mut writer = WRITER.lock();
         writeln!(writer, "\n{}", s).expect("writeln failed");
@@ -186,6 +188,7 @@ fn page_read_println() {
     }
 
     let s = "read worked";
+    #[cfg(target_arch = "x86_64")]
     interrupts::without_interrupts(|| {
         let mut writer = WRITER.lock();
         writeln!(writer, "\n{}", s).expect("writeln failed");

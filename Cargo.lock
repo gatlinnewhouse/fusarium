@@ -277,7 +277,7 @@ dependencies = [
 [[package]]
 name = "macros"
 version = "0.1.0"
-source = "git+https://github.com/carloskiki/rpi-devenv.git#9622e3e74563883eebaf728f1c0a32f0079c8df1"
+source = "git+https://github.com/carloskiki/rpi-devenv.git?branch=spi-refactor#b2d7abcf129507a1b9904804c398ec87e5358007"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -338,7 +338,7 @@ dependencies = [
 [[package]]
 name = "rpi"
 version = "0.1.0"
-source = "git+https://github.com/carloskiki/rpi-devenv.git#9622e3e74563883eebaf728f1c0a32f0079c8df1"
+source = "git+https://github.com/carloskiki/rpi-devenv.git?branch=spi-refactor#b2d7abcf129507a1b9904804c398ec87e5358007"
 dependencies = [
  "bitflags 2.9.0",
  "critical-section",

@@ -19,6 +19,7 @@ pub fn _print(args: ::core::fmt::Arguments) {
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::interrupts;
 
+    #[cfg(target_arch = "x86_64")]
     interrupts::without_interrupts(|| {
         SERIAL1
             .lock()

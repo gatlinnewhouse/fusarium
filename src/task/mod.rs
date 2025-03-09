@@ -15,8 +15,13 @@ pub mod keyboard;
 #[cfg(feature = "exec-simple")]
 pub mod simple_executor;
 
+#[cfg(target_arch = "x86_64")]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 struct TaskId(u64);
+
+#[cfg(target_arch = "arm")]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+struct TaskId(u32);
 
 impl TaskId {
     /// New unique ID for a task to prevent CPU hogging

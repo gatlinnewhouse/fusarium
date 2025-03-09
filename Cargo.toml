@@ -7,9 +7,9 @@ description = "Fusarium, named after the fungi that affects corn (and its kernel
 readme = "./README.md"
 
 [dependencies]
-bootloader = { version = "0.9", features = [
+bootloader = { version = "0.9", optional = true, features = [
   "map_physical_memory",
-], optional = true }
+] }
 volatile = { version = "0.2.6" }
 lazy_static = { version = "1.0", features = ["spin_no_std"] }
 spin = { version = "0.9.8" }
@@ -19,7 +19,10 @@ pic8259 = { version = "0.10.1", optional = true }
 pc-keyboard = { version = "0.7.0" }
 linked_list_allocator = { version = "0.10.x", optional = true }
 critical-section = { version = "1.2.0", optional = true, default-features = false }
-rpi = { git = "https://github.com/carloskiki/rpi-devenv.git", optional = true }
+rpi = { git = "https://github.com/carloskiki/rpi-devenv.git", branch = "spi-refactor", optional = true }
+
+[dev-dependencies] # this fixes cargo test
+bootloader = { version = "0.9", features = ["map_physical_memory"] }
 
 [dependencies.crossbeam-queue]
 version = "0.3.11"
@@ -36,16 +39,22 @@ default-features = false
 features = ["alloc"]
 
 [features]
-default = ["x86_64-qemu"]
+default = [
+  #"x86_64-qemu",
+  #"pico-zero-w",
+]
 
 # Hardware targets
 x86_64-qemu = [
+  #"alloc-bump",
+  #"alloc-fixed-block",
   "alloc-linked-list",
+  #"alloc-my-free-list",
   "exec-mine",
   "pic8259",
   "dep:bootloader",
-  "dep:x86_64",
   "dep:uart_16550",
+  "dep:x86_64",
 ]
 pico-zero-w = ["armv6a", "exec-simple"]
 

@@ -6,7 +6,6 @@ use fixed_size_block::FixedSizeBlockAllocator;
 use linked_list::LinkedListAllocator;
 #[cfg(feature = "alloc-linked-list")]
 use linked_list_allocator::LockedHeap;
-#[cfg(target_arch = "x86_64")]
 use x86_64::{
     structures::paging::{
         mapper::MapToError, FrameAllocator, Mapper, Page, PageTableFlags, Size4KiB,
@@ -15,10 +14,13 @@ use x86_64::{
 };
 
 #[cfg(feature = "alloc-bump")]
+#[path = "../allocator/bump.rs"]
 pub mod bump;
 #[cfg(feature = "alloc-fixed-block")]
+#[path = "../allocator/fixed_size_block.rs"]
 pub mod fixed_size_block;
 #[cfg(feature = "alloc-my-free-list")]
+#[path = "../allocator/linked_list.rs"]
 pub mod linked_list;
 
 /// A wrapper around spin::Mutex to permit trait implementations.
@@ -54,7 +56,10 @@ static ALLOCATOR: Locked<LinkedListAllocator> = Locked::new(LinkedListAllocator:
 #[global_allocator]
 static ALLOCATOR: Locked<FixedSizeBlockAllocator> = Locked::new(FixedSizeBlockAllocator::new());
 
+#[cfg(any(feature = "alloc-linked-list", feature = "alloc-fixed-block"))]
 pub const HEAP_START: *mut u8 = 0x_4444_4444_0000 as *mut u8;
+#[cfg(all(not(feature = "alloc-linked-list"), not(feature = "alloc-fixed-block")))]
+pub const HEAP_START: usize = 0x_4444_4444_0000;
 pub const HEAP_SIZE: usize = 100 * 1024; // 100 KiB
 
 pub fn init_heap(
@@ -86,6 +91,7 @@ pub fn init_heap(
     Ok(())
 }
 
+#[cfg(any(feature = "alloc-bump", feature = "alloc-my-free-list"))]
 /// Align the given address `addr` upwards to alignment `align`.
 ///
 /// Requires that `align` is a power of two.
