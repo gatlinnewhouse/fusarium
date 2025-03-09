@@ -5,14 +5,14 @@
 #![reexport_test_harness_main = "test_main"]
 #![feature(abi_x86_interrupt)]
 
-use core::panic::PanicInfo;
 #[cfg(target_arch = "arm")]
-use core::{
-    arch::asm,
-    sync::atomic::{compiler_fence, Ordering},
-};
+use core::arch::asm;
+use core::panic::PanicInfo;
 extern crate alloc;
 
+#[cfg(target_arch = "arm")]
+#[path = "armv6a/allocator.rs"]
+pub mod allocator;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/allocator.rs"]
 pub mod allocator;
@@ -51,6 +51,23 @@ pub fn hlt_loop() -> ! {
         unsafe {
             asm!("wfi");
         }
+    }
+}
+
+/// A wrapper around spin::Mutex to permit trait implementations.
+pub struct Locked<A> {
+    inner: spin::Mutex<A>,
+}
+
+impl<A> Locked<A> {
+    pub const fn new(inner: A) -> Self {
+        Locked {
+            inner: spin::Mutex::new(inner),
+        }
+    }
+
+    pub fn lock(&self) -> spin::MutexGuard<A> {
+        self.inner.lock()
     }
 }
 

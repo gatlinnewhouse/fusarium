@@ -1,6 +1,6 @@
 [build]
-target = "x86_64-fusarium.json"
-#target = "armv6a-fusarium.json"
+#target = "x86_64-fusarium.json"
+target = "armv6a-fusarium.json"
 
 [unstable]
 build-std = ["alloc", "core", "compiler_builtins"]
@@ -12,3 +12,4 @@ runner = "bootimage runner"
 
 [target.armv6a-fusarium] # aka Pi Zero W
 rustflags = ["-C", "link-arg=-Tlink.x"]
+runner = "qemu-system-arm -M raspi0 -kernel "

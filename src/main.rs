@@ -28,7 +28,9 @@ entry_point!(kernel_main);
 #[cfg(target_arch = "arm")]
 #[main]
 fn kernel_main() -> ! {
+    use fusarium::allocator;
     fusarium::init();
+    allocator::init_heap();
     fusarium::hlt_loop();
 }
 

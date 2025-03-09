@@ -1,3 +1,4 @@
+#[cfg(target_arch = "x86_64")]
 use lazy_static::lazy_static;
 use spin::Mutex;
 #[cfg(target_arch = "x86_64")]
@@ -25,6 +26,13 @@ pub fn _print(args: ::core::fmt::Arguments) {
             .lock()
             .write_fmt(args)
             .expect("Printing to serial failed");
+    });
+
+    #[cfg(target_arch = "arm")]
+    critical_section::with(|_| unsafe {
+        rpi::interrupt::disable();
+        // write stuff
+        rpi::interrupt::enable();
     });
 }
 

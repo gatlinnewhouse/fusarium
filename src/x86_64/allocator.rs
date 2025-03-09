@@ -1,3 +1,4 @@
+use super::Locked;
 #[cfg(feature = "alloc-bump")]
 use bump::BumpAllocator;
 #[cfg(feature = "alloc-fixed-block")]
@@ -22,23 +23,6 @@ pub mod fixed_size_block;
 #[cfg(feature = "alloc-my-free-list")]
 #[path = "../allocator/linked_list.rs"]
 pub mod linked_list;
-
-/// A wrapper around spin::Mutex to permit trait implementations.
-pub struct Locked<A> {
-    inner: spin::Mutex<A>,
-}
-
-impl<A> Locked<A> {
-    pub const fn new(inner: A) -> Self {
-        Locked {
-            inner: spin::Mutex::new(inner),
-        }
-    }
-
-    pub fn lock(&self) -> spin::MutexGuard<A> {
-        self.inner.lock()
-    }
-}
 
 #[cfg(feature = "alloc-linked-list")]
 #[global_allocator]
