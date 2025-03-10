@@ -20,12 +20,13 @@ use fusarium::task::executor::Executor;
 use fusarium::task::simple_executor::SimpleExecutor;
 #[cfg(all(target_arch = "x86_64", not(test)))]
 use fusarium::task::{keyboard, Task};
-#[cfg(target_arch = "arm")]
-use rpi::main;
 
 #[cfg(target_arch = "arm")]
-#[main]
-fn kernel_init() -> ! {
+#[path = "armv6a/boot.rs"]
+pub mod boot;
+
+#[cfg(target_arch = "arm")]
+fn kernel_main() -> ! {
     use fusarium::serial_println;
 
     serial_println!("Hello from Rust!");

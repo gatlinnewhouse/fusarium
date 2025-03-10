@@ -9,9 +9,6 @@ use core::panic::PanicInfo;
 
 #[cfg(target_arch = "x86_64")]
 pub mod allocator;
-#[cfg(target_arch = "arm")]
-#[path = "armv6a/boot.rs"]
-pub mod boot;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/gdt.rs"]
 pub mod gdt;
