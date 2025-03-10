@@ -1,6 +1,6 @@
 /// Physical memory map
 // From https://github.com/thanoskoutr/armOS/wiki/Raspberry-Pi-Hardware
-pub(super) mod map {
+pub mod map {
     pub const GPIO_OFFSET: usize = 0x0020_0000;
     pub const UART_OFFSET: usize = 0x0020_1000;
 

@@ -1,4 +1,4 @@
-// Device drivers
+/// Device drivers
 pub mod drivers;
-// Memory info
+/// Memory info
 pub mod memory;

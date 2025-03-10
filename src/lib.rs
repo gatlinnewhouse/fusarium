@@ -9,15 +9,14 @@ use core::panic::PanicInfo;
 
 #[cfg(target_arch = "x86_64")]
 pub mod allocator;
+#[cfg(target_arch = "arm")]
+pub mod armv6a;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/gdt.rs"]
 pub mod gdt;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/interrupts.rs"]
 pub mod interrupts;
-#[cfg(target_arch = "arm")]
-#[path = "armv6a/memory.rs"]
-pub mod memory;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/memory.rs"]
 pub mod memory;

@@ -1,4 +1,6 @@
 #[cfg(target_arch = "arm")]
+use super::armv6a::memory::map::mmio::PL011_UART_START;
+#[cfg(target_arch = "arm")]
 use arm_pl011_uart::{DataBits, LineConfig, OwnedMmioPointer, Parity, StopBits, Uart};
 use core::fmt::Write;
 use lazy_static::lazy_static;
@@ -20,7 +22,7 @@ lazy_static! {
     pub static ref SERIAL1: Mutex<Uart<'static>> = {
         let mut serial_port = unsafe {
             Uart::new(OwnedMmioPointer::new(
-                core::ptr::NonNull::new(crate::memory::map::mmio::PL011_UART_START as *mut _)
+                core::ptr::NonNull::new(PL011_UART_START as *mut _)
                     .expect("Unable to take serial port"),
             ))
         };

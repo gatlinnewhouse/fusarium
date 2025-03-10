@@ -44,7 +44,7 @@ x86_64 = { version = "0.14.2" }
 
 # Feature config
 [features]
-default = ["armv6a"]
+default = ["x86_64"]
 
 # Hardware configs
 armv6a = [
