@@ -13,8 +13,6 @@ runner = "bootimage runner"
 [target.armv6a-fusarium] # aka QEMU ARM
 rustflags = ["-C", "target-cpu=arm1176jzf-s", "-C", "link-arg=-Tlink.x"]
 runner = "qemu-system-arm -no-reboot -serial stdio -M raspi0 -kernel "
-#TODO: get dtb and kernel working together like below
-#runner = "qemu-system-arm -cpu arm1176 -m 256 -M versatilepb -no-reboot -serial stdio -dtb deps/bcm2708-rpi-zero-w.dtb -kernel "
 
 [target.armv6a-fusarium-pi0w] # aka Pi Zero W
 rustflags = ["-C", "target-cpu=arm1176jzf-s", "-C", "link-arg=-Tbootloader.x"]
