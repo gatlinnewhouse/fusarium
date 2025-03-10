@@ -1,3 +1,4 @@
+extern crate alloc;
 use alloc::boxed::Box;
 #[cfg(target_arch = "arm")]
 use core::sync::atomic::{AtomicU32, Ordering};
