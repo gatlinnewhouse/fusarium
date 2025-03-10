@@ -1,4 +1,0 @@
-[submodule "deps/rpi-devenv"]
-	path = deps/rpi-devenv
-	url = https://github.com/carloskiki/rpi-devenv.git
-	branch = spi-refactor
