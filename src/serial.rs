@@ -43,22 +43,17 @@ lazy_static! {
 
 #[doc(hidden)]
 pub fn _print(args: ::core::fmt::Arguments) {
+    #[cfg(target_arch = "arm")]
+    use crate::armv6a::interrupts;
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::interrupts;
 
-    #[cfg(target_arch = "x86_64")]
     interrupts::without_interrupts(|| {
         SERIAL1
             .lock()
             .write_fmt(args)
             .expect("Printing to serial failed");
     });
-
-    #[cfg(target_arch = "arm")]
-    SERIAL1
-        .lock()
-        .write_fmt(args)
-        .expect("Printing to serial failed");
 }
 
 #[macro_export]

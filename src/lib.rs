@@ -23,7 +23,6 @@ pub mod memory;
 pub mod serial;
 #[cfg(target_arch = "x86_64")]
 pub mod task;
-#[cfg(target_arch = "x86_64")]
 pub mod vga_buffer;
 
 pub fn init() {

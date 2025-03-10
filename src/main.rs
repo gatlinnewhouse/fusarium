@@ -26,9 +26,10 @@ pub mod boot;
 
 #[cfg(target_arch = "arm")]
 fn kernel_main() -> ! {
-    use fusarium::serial_println;
+    use fusarium::{println, serial_println};
 
     serial_println!("Hello from Rust!");
+    println!("Hello!");
     panic!("Stopping");
 }
 
