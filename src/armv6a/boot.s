@@ -37,7 +37,7 @@ _start:
 	blo 1b
 
 	// Call start_rust
-	ldr r3, =start_rust
+	ldr r3, =_start_rust
 	blx r3
 
 	// halt
