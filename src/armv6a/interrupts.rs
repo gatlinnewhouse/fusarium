@@ -1,12 +1,18 @@
-use super::memory::map::mmio::irq;
 use core::{
     arch::asm,
     sync::atomic::{compiler_fence, Ordering},
 };
 
+/// Check if we are in an interrupt
+///
+/// # Returns
+/// * True if we are in an interrupt
+/// * False otherwise
 #[inline]
 pub fn are_enabled() -> bool {
-    todo!()
+    let mut cpsr: u32; // Current processor execution state
+    unsafe { asm!("mrs {}, cpsr", out(reg) cpsr, options(nomem, nostack, preserves_flags)) };
+    cpsr & 1 << 7 == 0
 }
 
 /// Disable interrupts
@@ -38,12 +44,18 @@ pub(crate) fn without_interrupts<F, R>(f: F) -> R
 where
     F: FnOnce() -> R,
 {
-    disable();
+    let intpt_flag = are_enabled();
+
+    if intpt_flag {
+        disable();
+    }
 
     // do 'f' while interrupts are disabled
     let ret = f();
 
-    enable();
+    if intpt_flag {
+        enable();
+    }
 
     ret
 }
