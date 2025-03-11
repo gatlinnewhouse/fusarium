@@ -24,6 +24,7 @@ pub struct VideoDriver<'a> {
 impl<'a> VideoDriver<'a> {
     pub fn take() -> Option<VideoDriver<'a>> {
         without_interrupts(|| unsafe {
+            #[allow(static_mut_refs)]
             if !VIDEO_AVAIL.load(Ordering::Relaxed) {
                 None
             } else {

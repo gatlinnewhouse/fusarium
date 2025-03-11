@@ -20,11 +20,11 @@ pub trait Mailable {
 impl MailStatus {
     /// Check if second to last bit is not filled
     pub fn is_empty(&self) -> bool {
-        ((self.0 & (1 << 30)) != 0) as bool
+        (self.0 & (1 << 30)) != 0
     }
     /// Check if last bit is filled
     pub fn is_full(&self) -> bool {
-        ((self.0 & (1 << 31)) != 0) as bool
+        (self.0 & (1 << 31)) != 0
     }
 }
 

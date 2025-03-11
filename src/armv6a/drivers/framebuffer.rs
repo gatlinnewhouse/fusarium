@@ -8,12 +8,11 @@ use embedded_graphics::{
     pixelcolor::Rgb888,
     prelude::*,
     primitives::Rectangle,
-    text::Text,
 };
 use embedded_text::{
-    alignment::{HorizontalAlignment, VerticalAlignment},
+    alignment::VerticalAlignment,
     plugin::tail::Tail,
-    style::{HeightMode, TextBoxStyle, TextBoxStyleBuilder},
+    style::{TextBoxStyle, TextBoxStyleBuilder},
     TextBox,
 };
 
