@@ -66,7 +66,7 @@ impl MailChannel {
 }
 
 impl MailBox {
-    pub fn new() -> MailBox {
+    pub const fn new() -> MailBox {
         MailBox()
     }
 

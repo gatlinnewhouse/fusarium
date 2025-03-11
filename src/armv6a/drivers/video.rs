@@ -22,6 +22,12 @@ pub struct VideoDriver<'a> {
 }
 
 impl<'a> VideoDriver<'a> {
+    pub const fn new() -> VideoDriver<'a> {
+        Self {
+            buffer: FrameBuffer::unitialized(),
+            mailbox: MailBox::new(),
+        }
+    }
     pub fn take() -> Option<VideoDriver<'a>> {
         without_interrupts(|| unsafe {
             #[allow(static_mut_refs)]
@@ -67,5 +73,11 @@ impl<'a> VideoDriver<'a> {
     }
     pub fn painter(&'a mut self) -> Painter<'a> {
         Painter::new(&mut self.buffer)
+    }
+}
+
+impl<'a> Default for VideoDriver<'a> {
+    fn default() -> Self {
+        Self::new()
     }
 }

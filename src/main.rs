@@ -29,6 +29,7 @@ fn kernel_main() -> ! {
     use fusarium::{println, serial_println};
 
     serial_println!("Hello");
+    println!("Hello");
     println!("From {}", "Rust");
     panic!("Stopping");
 }

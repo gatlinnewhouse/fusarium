@@ -1,8 +1,10 @@
+use crate::armv6a::interrupts::without_interrupts;
+
 #[cfg(target_arch = "arm")]
 use super::armv6a::memory::map::mmio::PL011_UART_START;
 #[cfg(target_arch = "arm")]
 use arm_pl011_uart::{DataBits, LineConfig, OwnedMmioPointer, Parity, StopBits, Uart};
-use core::fmt::Write;
+use core::{fmt::Write, ptr::write_volatile};
 use lazy_static::lazy_static;
 use spin::Mutex;
 #[cfg(target_arch = "x86_64")]
@@ -32,11 +34,12 @@ lazy_static! {
         // https://krinkinmu.github.io/2020/11/29/PL011.html
         //
         // Already enabled??? Does not work with this config for QEMU
-        //serial_port.enable(LineConfig {
-        //    parity: Parity::None,
-        //    data_bits: DataBits::Bits8,
-        //    stop_bits: StopBits::One,
-        //}, 115200, 270).expect("Unable to enable serial port");
+        #[cfg(not(feature = "qemu"))]
+        serial_port.enable(LineConfig {
+            parity: Parity::None,
+            data_bits: DataBits::Bits8,
+            stop_bits: StopBits::One,
+        }, 115200, 270).expect("Unable to enable serial port");
         Mutex::new(serial_port)
     };
 }

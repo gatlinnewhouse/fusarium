@@ -16,8 +16,6 @@ macro_rules! println {
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
-    #[cfg(target_arch = "arm")]
-    use crate::armv6a::interrupts;
     use core::fmt::Write;
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::interrupts;
@@ -159,8 +157,6 @@ fn test_println_many() {
 
 #[test_case]
 fn test_println_output() {
-    #[cfg(target_arch = "arm")]
-    use crate::armv6a::interrupts;
     use core::fmt::Write;
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::interrupts;
@@ -178,8 +174,6 @@ fn test_println_output() {
 
 #[test_case]
 fn page_read_println() {
-    #[cfg(target_arch = "arm")]
-    use crate::armv6a::interrupts;
     use core::fmt::Write;
     #[cfg(target_arch = "x86_64")]
     use x86_64::instructions::interrupts;

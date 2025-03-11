@@ -2,7 +2,7 @@
 
 use super::mailbox::{Mail, Mailable};
 use crate::armv6a::{interrupts::without_interrupts, memory::AddressTranslation};
-use core::{convert::TryInto, fmt};
+use core::convert::TryInto;
 use embedded_graphics::{
     mono_font::{iso_8859_4::FONT_9X18, MonoTextStyle},
     pixelcolor::Rgb888,
@@ -40,9 +40,7 @@ pub struct Painter<'a> {
 
 const CHARACTER_STYLE: MonoTextStyle<'static, Rgb888> =
     MonoTextStyle::new(&FONT_9X18, Rgb888::YELLOW);
-const TEXTBOX_STYLE: TextBoxStyle = TextBoxStyleBuilder::new()
-    .vertical_alignment(VerticalAlignment::Bottom)
-    .build();
+const TEXTBOX_STYLE: TextBoxStyle = TextBoxStyle::default();
 
 #[repr(C)]
 #[derive(Debug)]
@@ -91,7 +89,7 @@ impl From<Rgb888> for Pixel {
 }
 
 impl<'a> FrameBuffer<'a> {
-    pub fn unitialized() -> FrameBuffer<'a> {
+    pub const fn unitialized() -> FrameBuffer<'a> {
         FrameBuffer {
             buffer: &mut [],
             pitch: 0,
@@ -162,11 +160,11 @@ impl<'a> Painter<'a> {
     pub fn clear_screen(&mut self) {
         self.buffer().iter_mut().for_each(|p| *p = Pixel::hex(0));
     }
-    pub fn print_text(&mut self, args: fmt::Arguments) {
+    pub fn print_text(&mut self, msg: &str) {
         // Textbox is a hero
         without_interrupts(|| {
             TextBox::with_textbox_style(
-                args.as_str().unwrap(),
+                msg,
                 Rectangle::new(
                     Point::zero(),
                     Size {

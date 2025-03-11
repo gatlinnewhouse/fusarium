@@ -46,7 +46,7 @@ x86_64 = { version = "0.14.2" }
 
 # Feature config
 [features]
-default = ["armv6a"]
+default = ["armv6a", "qemu"]
 
 # Hardware configs
 armv6a = [
@@ -74,6 +74,7 @@ alloc-linked-list = []
 alloc-my-free-list = []
 exec-simple = []
 exec-mine = []
+qemu = []
 
 [profile.dev]
 panic = "abort"
