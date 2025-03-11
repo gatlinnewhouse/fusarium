@@ -2,17 +2,13 @@ use crate::armv6a::drivers::{
     framebuffer::{HEIGHT, WIDTH},
     video::VideoDriver,
 };
-use conquer_once::spin::{Once, OnceCell};
-use core::{
-    fmt::{self, Write},
-    ops::{Deref, DerefMut},
-    sync::atomic::{compiler_fence, Ordering},
-};
+use conquer_once::spin::Once;
+use core::fmt::{self, Write};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
 
-use super::drivers::framebuffer::Painter;
+use super::{drivers::framebuffer::Painter, interrupts};
 
 #[macro_export]
 macro_rules! print {
@@ -61,22 +57,25 @@ lazy_static! {
 static mut VIDEO: VideoDriver<'static> = VideoDriver::new();
 static VID_INIT: Once = Once::uninit();
 
+lazy_static! {
+    pub static ref VGA: Mutex<Painter<'static>> = unsafe {
+        interrupts::without_interrupts(|| -> Mutex<Painter<'static>> {
+            VID_INIT.init_once(|| {
+                VIDEO = VideoDriver::take().unwrap();
+                VIDEO.init(WIDTH, HEIGHT);
+            });
+            Mutex::new(VIDEO.painter())
+        })
+    };
+}
+
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use super::interrupts;
-    unsafe {
-        VID_INIT.init_once(|| {
-            VIDEO = VideoDriver::take().unwrap();
-            #[allow(static_mut_refs)]
-            VIDEO.init(WIDTH, HEIGHT);
-        });
-    }
+
     interrupts::without_interrupts(|| {
         WRITER.lock().write_fmt(args).unwrap();
-        #[allow(static_mut_refs)]
-        unsafe {
-            VIDEO.painter().print_text(WRITER.lock().to_str());
-        }
+        VGA.lock().print_text(WRITER.lock().to_str());
     });
 }
 

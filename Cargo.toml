@@ -31,11 +31,15 @@ features = ["alloc"]
 # Target specific dependencies
 [target.'cfg(target_arch = "arm")'.dependencies]
 aarch64-cpu = { version = "10.0.0" }
-arm-pl011-uart = { version = "0.2.0", features = [] }
+arm-pl011-uart = { version = "0.2.0", features = [
+  "embedded-hal-nb",
+  "embedded-io",
+] }
 #critical-section = { version = "1.2.0", features = ["restore-state-bool"] }
 embedded-alloc = { version = "0.6.0", default-features = false }
 embedded-graphics = { version = "0.8.1" }
 embedded-text = { version = "0.7.2" }
+tock-registers = { version = "0.8.x" }
 #rpi = { path = "./deps/rpi-devenv" }
 
 [target.'cfg(target_arch = "x86_64")'.dependencies]

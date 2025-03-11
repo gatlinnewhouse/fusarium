@@ -44,7 +44,8 @@ pub(crate) fn without_interrupts<F, R>(f: F) -> R
 where
     F: FnOnce() -> R,
 {
-    data_memory_barrier();
+    //data_memory_barrier(); // when to use this vs not?
+    //aarch64_cpu::asm::barrier::dmb();
 
     let intpt_flag = are_enabled();
 

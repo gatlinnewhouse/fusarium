@@ -7,10 +7,17 @@
 
 use core::panic::PanicInfo;
 
-#[cfg(target_arch = "x86_64")]
-pub mod allocator;
+// Common modules
+pub mod serial;
+
+// ARM modules
 #[cfg(target_arch = "arm")]
 pub mod armv6a;
+
+//TODO: clean up pathing of
+// x86_64 modules
+#[cfg(target_arch = "x86_64")]
+pub mod allocator;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/gdt.rs"]
 pub mod gdt;
@@ -20,7 +27,6 @@ pub mod interrupts;
 #[cfg(target_arch = "x86_64")]
 #[path = "x86_64/memory.rs"]
 pub mod memory;
-pub mod serial;
 #[cfg(target_arch = "x86_64")]
 pub mod task;
 #[cfg(target_arch = "x86_64")]
@@ -35,6 +41,10 @@ pub fn init() {
         unsafe { interrupts::PICS.lock().initialize() };
         x86_64::instructions::interrupts::enable();
     }
+    #[cfg(target_arch = "arm")]
+    {
+        armv6a::interrupts::enable();
+    }
 }
 
 pub fn hlt_loop() -> ! {
@@ -42,6 +52,8 @@ pub fn hlt_loop() -> ! {
         #[cfg(target_arch = "x86_64")]
         x86_64::instructions::hlt();
         #[cfg(target_arch = "arm")]
+        // It seems like `wfe` is more appropriate here but I thought for awhile I wanted `wfi`
+        // https://developer.arm.com/documentation/ka001283/latest/
         aarch64_cpu::asm::wfe();
     }
 }
@@ -123,5 +135,5 @@ fn test_breakpoint_exception() {
     #[cfg(target_arch = "x86_64")]
     x86_64::instructions::interrupts::int3();
     #[cfg(target_arch = "arm")]
-    aarch64_cpu::asm::bkpt();
+    aarch64_cpu::asm::eret(); // this appears to be an exception return instruction
 }
