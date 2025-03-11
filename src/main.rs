@@ -31,6 +31,8 @@ fn kernel_main() -> ! {
     serial_println!("Hello");
     println!("Hello");
     println!("From {}", "Rust");
+    println!("My lines scroll now, {} lines", 25);
+    println!("2+2={}", 2 + 2);
     panic!("Stopping");
 }
 

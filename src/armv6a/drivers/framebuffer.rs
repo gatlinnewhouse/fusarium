@@ -4,20 +4,20 @@ use super::mailbox::{Mail, Mailable};
 use crate::armv6a::{interrupts::without_interrupts, memory::AddressTranslation};
 use core::convert::TryInto;
 use embedded_graphics::{
-    mono_font::{iso_8859_4::FONT_9X18, MonoTextStyle},
+    mono_font::{ascii::FONT_8X13, MonoTextStyle},
     pixelcolor::Rgb888,
     prelude::*,
     primitives::Rectangle,
 };
 use embedded_text::{
-    alignment::VerticalAlignment,
+    alignment::{HorizontalAlignment, VerticalAlignment},
     plugin::tail::Tail,
     style::{TextBoxStyle, TextBoxStyleBuilder},
     TextBox,
 };
 
 pub const WIDTH: u32 = 640;
-pub const HEIGHT: u32 = 480;
+pub const HEIGHT: u32 = 486;
 
 #[repr(C)]
 #[derive(Clone, Copy)]
@@ -39,8 +39,12 @@ pub struct Painter<'a> {
 }
 
 const CHARACTER_STYLE: MonoTextStyle<'static, Rgb888> =
-    MonoTextStyle::new(&FONT_9X18, Rgb888::YELLOW);
-const TEXTBOX_STYLE: TextBoxStyle = TextBoxStyle::default();
+    MonoTextStyle::new(&FONT_8X13, Rgb888::YELLOW);
+const TEXTBOX_STYLE: TextBoxStyle = TextBoxStyleBuilder::new()
+    .alignment(HorizontalAlignment::Left)
+    .vertical_alignment(VerticalAlignment::Bottom)
+    .leading_spaces(false)
+    .build();
 
 #[repr(C)]
 #[derive(Debug)]
@@ -163,13 +167,14 @@ impl<'a> Painter<'a> {
     pub fn print_text(&mut self, msg: &str) {
         // Textbox is a hero
         without_interrupts(|| {
+            self.clear_screen();
             TextBox::with_textbox_style(
                 msg,
                 Rectangle::new(
                     Point::zero(),
                     Size {
-                        width: WIDTH,
-                        height: HEIGHT + 16,
+                        width: WIDTH - 4,
+                        height: HEIGHT - 4,
                     },
                 ),
                 CHARACTER_STYLE,
