@@ -6,3 +6,5 @@ pub mod gpio;
 pub mod mailbox;
 /// PL011 UART
 pub mod uart;
+/// Video driver
+pub mod video;

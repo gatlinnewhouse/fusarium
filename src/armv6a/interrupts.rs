@@ -44,6 +44,8 @@ pub(crate) fn without_interrupts<F, R>(f: F) -> R
 where
     F: FnOnce() -> R,
 {
+    data_memory_barrier();
+
     let intpt_flag = are_enabled();
 
     if intpt_flag {
@@ -58,4 +60,15 @@ where
     }
 
     ret
+}
+
+/// Perform a data memory barrier operation.
+///
+/// From rpi-devenv
+pub fn data_memory_barrier() {
+    // Safety: The operation is defined in the ARMv6 manual. See section B2.6.1 of the ARMv6 manual,
+    // and section 3.2.22 of the ARM1176JZFS manual.
+    unsafe {
+        asm!("mcr p15, 0, {}, c7, c10, 5", in(reg) 0, options(nostack, nomem, preserves_flags));
+    }
 }

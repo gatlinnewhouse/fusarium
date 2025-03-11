@@ -28,8 +28,8 @@ pub mod boot;
 fn kernel_main() -> ! {
     use fusarium::{println, serial_println};
 
-    serial_println!("Hello from Rust!");
-    println!("Hello!");
+    serial_println!("Hello");
+    println!("From {}", "Rust");
     panic!("Stopping");
 }
 
