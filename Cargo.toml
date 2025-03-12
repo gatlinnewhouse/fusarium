@@ -39,6 +39,7 @@ arm-pl011-uart = { version = "0.2.0", features = [
 embedded-alloc = { version = "0.6.0", default-features = false }
 embedded-graphics = { version = "0.8.1" }
 embedded-text = { version = "0.7.2" }
+heapless = { version = "0.8.0" }
 tock-registers = { version = "0.8.x" }
 #rpi = { path = "./deps/rpi-devenv" }
 
@@ -81,9 +82,14 @@ exec-mine = []
 qemu = []
 
 [profile.dev]
+opt-level = 1
 panic = "abort"
 
 [profile.release]
+codegen-units = 1
+debug = 2
+lto = true
+opt-level = "z"
 panic = "abort"
 
 [package.metadata.bootimage]

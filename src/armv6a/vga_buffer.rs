@@ -3,7 +3,11 @@ use crate::armv6a::drivers::{
     video::VideoDriver,
 };
 use conquer_once::spin::Once;
-use core::fmt::{self, Write};
+use core::{
+    fmt::{self, Write},
+    str::FromStr,
+};
+use heapless::{String, Vec};
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
@@ -23,34 +27,19 @@ macro_rules! println {
 
 //TODO: Add ansi support, unify vga_buffer codebase with x86_64
 
-//TODO: fix the buffer to write subsequent lines to
-
-pub const BUFFER_HEIGHT: usize = 25;
 pub const BUFFER_WIDTH: usize = 80;
-
-#[derive(Clone)]
-#[repr(transparent)]
-struct Buffer {
-    chars: [[Volatile<u8>; BUFFER_WIDTH]; BUFFER_HEIGHT],
-}
+pub const BUFFER_HEIGHT: usize = 25;
+pub const BUFFER: usize = BUFFER_HEIGHT * BUFFER_WIDTH;
 
 pub struct Writer {
-    column_position: usize,
-    buffer: Buffer,
-}
-
-lazy_static! {
-    static ref BUF: Buffer = Buffer {
-        chars: core::array::from_fn::<_, BUFFER_HEIGHT, _>(|_| {
-            core::array::from_fn::<_, BUFFER_WIDTH, _>(|_| Volatile::new(b' '))
-        }),
-    };
+    buffer_queue: Vec<String<BUFFER_WIDTH>, BUFFER_HEIGHT>,
+    buffer: String<BUFFER>,
 }
 
 lazy_static! {
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
-        column_position: 0,
-        buffer: BUF.clone(),
+        buffer_queue: Vec::<String<BUFFER_WIDTH>, BUFFER_HEIGHT>::new(),
+        buffer: String::new()
     });
 }
 
@@ -80,66 +69,17 @@ pub fn _print(args: fmt::Arguments) {
 }
 
 impl Writer {
-    pub fn write_byte(&mut self, byte: u8) {
-        match byte {
-            b'\n' => self.new_line(),
-            byte => {
-                if self.column_position >= BUFFER_WIDTH {
-                    self.new_line();
-                }
-
-                let row = BUFFER_HEIGHT - 1;
-                let col = self.column_position;
-
-                self.buffer.chars[row][col].write(byte);
-                self.column_position += 1;
-            }
-        }
-    }
-
-    fn new_line(&mut self) {
-        for row in 1..BUFFER_HEIGHT {
-            for col in 0..BUFFER_WIDTH {
-                let character = self.buffer.chars[row][col].read();
-                self.buffer.chars[row - 1][col].write(character);
-            }
-        }
-        self.clear_row(BUFFER_HEIGHT - 1);
-        self.column_position = 0;
-    }
-
     pub fn write_string(&mut self, s: &str) {
-        for byte in s.bytes() {
-            match byte {
-                // printable ASCII byte or newline
-                0x20..=0x7e | b'\n' => self.write_byte(byte),
-                // not part of printable ASCII range
-                _ => self.write_byte(0xfe),
-            }
+        // Pop the last element, is None if not full
+        let _ = self.buffer_queue.pop();
+        if let Ok(t) = String::from_str(s) {
+            _ = self.buffer.push_str(t.as_str());
+            _ = self.buffer_queue.push(t);
         }
     }
 
-    fn clear_row(&mut self, row: usize) {
-        for col in 0..BUFFER_WIDTH {
-            self.buffer.chars[row][col].write(b' ');
-        }
-    }
     fn to_str(&self) -> &str {
-        static mut BUFFER_STR: [u8; BUFFER_WIDTH * BUFFER_HEIGHT] =
-            [b' '; BUFFER_WIDTH * BUFFER_HEIGHT];
-        let mut idx = 0;
-        for row in self.buffer.chars.iter() {
-            for byte in row.iter() {
-                unsafe {
-                    BUFFER_STR[idx] = byte.read();
-                }
-                idx += 1;
-            }
-        }
-        #[allow(static_mut_refs)]
-        unsafe {
-            core::str::from_utf8(&BUFFER_STR).unwrap()
-        }
+        self.buffer.as_str()
     }
 }
 
