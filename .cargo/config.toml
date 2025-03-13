@@ -11,7 +11,7 @@ panic-abort-tests = true
 runner = "bootimage runner"
 
 [target.armv6a-fusarium] # aka QEMU ARM
-rustflags = ["-C", "target-cpu=arm1176jzf-s", "-C", "link-arg=-Tbootloader.x"]
+rustflags = ["-C", "target-cpu=arm1176jzf-s", "-C", "link-arg=-Tlink.x"]
 runner = "qemu-system-arm -no-reboot -serial stdio -M raspi0 -m 512M -kernel "
 
 [target.armv6a-fusarium-pi0w] # aka Pi Zero W

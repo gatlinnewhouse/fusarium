@@ -165,6 +165,9 @@ impl<'a> Painter<'a> {
         self.buffer().iter_mut().for_each(|p| *p = Pixel::hex(0));
     }
     pub fn print_text(&mut self, msg: &str) {
+        //TODO: improve scrolling
+        // with global Textbox and transform operations
+
         // Textbox is a hero
         without_interrupts(|| {
             self.clear_screen();

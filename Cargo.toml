@@ -82,14 +82,9 @@ exec-mine = []
 qemu = []
 
 [profile.dev]
-opt-level = 1
 panic = "abort"
 
 [profile.release]
-codegen-units = 1
-debug = 2
-lto = true
-opt-level = "z"
 panic = "abort"
 
 [package.metadata.bootimage]

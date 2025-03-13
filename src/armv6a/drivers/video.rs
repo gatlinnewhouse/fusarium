@@ -31,13 +31,14 @@ impl<'a> VideoDriver<'a> {
     }
     pub fn take() -> Option<VideoDriver<'a>> {
         without_interrupts(|| unsafe {
+            data_memory_barrier();
             #[allow(static_mut_refs)]
             if !VIDEO_AVAIL.load(Ordering::Relaxed) {
                 None
             } else {
                 VIDEO_AVAIL.store(false, Ordering::Relaxed);
-                //data_memory_barrier();
-                (0..300).for_each(|_| unsafe { asm!("nop") });
+                data_memory_barrier();
+                (0..300).for_each(|_| asm!("nop"));
                 without_interrupts(|| {
                     Some(VideoDriver {
                         buffer: FrameBuffer::unitialized(),

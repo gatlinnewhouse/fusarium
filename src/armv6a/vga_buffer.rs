@@ -71,14 +71,16 @@ pub fn _print(args: fmt::Arguments) {
 impl Writer {
     pub fn write_string(&mut self, s: &str) {
         // Pop the last element, is None if not full
-        let _ = self.buffer_queue.pop();
+        if self.buffer_queue.is_full() {
+            let _ = self.buffer_queue.pop();
+        }
         if let Ok(t) = String::from_str(s) {
             _ = self.buffer.push_str(t.as_str());
             _ = self.buffer_queue.push(t);
         }
     }
 
-    fn to_str(&self) -> &str {
+    pub fn to_str(&self) -> &str {
         self.buffer.as_str()
     }
 }

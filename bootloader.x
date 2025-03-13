@@ -1,57 +1,80 @@
-/* The linker script for the uart bootloader of the Raspberry Pi 0. */
-/* From rpi-devenv */
-/* We do not care about setting a LOAD address, because the raspberry pi always loads the binary at 0x8000. */
-__physical_load_address = 0x8000;
+/* SPDX-License-Identifier: MIT OR Apache-2.0
+ *
+ * Copyright (c) 2018-2022 Andre Richter <andre.o.richter@gmail.com>
+ */
 
-/* Arbitrary place to relocate ourselves to. We want to get out of the way, and load a kernel that we
-   receive over UART at the __physical_load_address. */
-__relocate_address = 0x2000000;
+__rpi_phys_dram_start_addr = 0;
 
-MEMORY {
-    ram : ORIGIN = __physical_load_address, LENGTH = 0x100000
-    relocate : ORIGIN = __relocate_address, LENGTH = 0x100000
+/* The physical address at which the the kernel binary will be loaded by the Raspberry's firmware */
+__rpi_phys_binary_load_addr = 0x80000;
+
+
+ENTRY(__rpi_phys_binary_load_addr)
+
+/* Flags:
+ *     4 == R
+ *     5 == RX
+ *     6 == RW
+ *
+ * Segments are marked PT_LOAD below so that the ELF file provides virtual and physical addresses.
+ * It doesn't mean all of them need actually be loaded.
+ */
+PHDRS
+{
+    segment_boot_core_stack PT_LOAD FLAGS(6);
+    segment_code            PT_LOAD FLAGS(5);
+    segment_data            PT_LOAD FLAGS(6);
 }
 
-ENTRY(__physical_load_address)
 SECTIONS
 {
-    /* Starts at LOADER_ADDR. */
-    __text_start = .;
+    . =  __rpi_phys_dram_start_addr;
+
+    /***********************************************************************************************
+    * Boot Core Stack
+    ***********************************************************************************************/
+    .boot_core_stack (NOLOAD) :
+    {
+                                             /*   ^             */
+                                             /*   | stack       */
+        . += __rpi_phys_binary_load_addr;    /*   | growth      */
+                                             /*   | direction   */
+        __boot_core_stack_end_exclusive = .; /*   |             */
+    } :segment_boot_core_stack
+
+    /***********************************************************************************************
+    * Code + RO Data + Global Offset Table
+    ***********************************************************************************************/
     .text :
     {
-        KEEP(*(.text.boot))
-        *(.text)
-        *(.text.*)
-    } > relocate AT>ram
-    __text_end = .;
+        KEEP(*(.text._start))
+        *(.text._start_arguments) /* Constants (or statics in Rust speak) read by _start(). */
+        *(.text._start_rust)      /* The Rust entry point */
+        *(.text*)                 /* Everything else */
+    } :segment_code
 
-    __rodata_start = .;
-    .rodata :
+    .rodata : ALIGN(8) { *(.rodata*) } :segment_code
+
+    /***********************************************************************************************
+    * Data + BSS
+    ***********************************************************************************************/
+    .data : { *(.data*) } :segment_data
+
+    /* Section is zeroed in pairs of u64. Align start and end to 16 bytes */
+    .bss (NOLOAD) : ALIGN(16)
     {
-        *(.rodata)
-        *(.rodata.*)
-    } > relocate AT>ram
-    __rodata_end = .;
+        __bss_start = .;
+        *(.bss*);
+        . = ALIGN(16);
+        __bss_end_exclusive = .;
+    } :segment_data
 
-    __data_start = .;
-    .data : 
-    { 
-        *(.data)
-        *(.data.*) 
-    } > relocate AT>ram
-    __data_end = .;
+    /***********************************************************************************************
+    * Misc
+    ***********************************************************************************************/
+    .got : { *(.got*) }
+    ASSERT(SIZEOF(.got) == 0, "Relocation support not expected")
 
-    __bss_start = .;
-    .bss :
-    {
-        *(.bss)
-        *(.bss.*)
-    } > relocate AT>ram
-    __bss_end = .;
-    
-    /* 
-        We do not care about stack unwinding information, so we discard it.
-    */
-    /DISCARD/ : { *(.ARM.exidx*) }
+    /DISCARD/ : { *(.comment*) }
 }
 

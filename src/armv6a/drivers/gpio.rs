@@ -60,11 +60,11 @@ impl GPIOInner {
         }
     }
     pub fn map_pl011_uart(&mut self) {
-        //data_memory_barrier();
+        data_memory_barrier();
         self.regs
             .GPFSEL1
             .modify(GPFSEL1::FSEL15::AltFunc0 + GPFSEL1::FSEL14::AltFunc0);
-        //(0..300).for_each(|_| unsafe { asm!("nop") });
+        (0..300).for_each(|_| unsafe { asm!("nop") });
     }
 }
 

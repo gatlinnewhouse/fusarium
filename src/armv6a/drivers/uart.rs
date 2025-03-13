@@ -20,7 +20,7 @@ impl Pl011Uart {
             // map uart pins?
             gpio.map_pl011_uart();
 
-            //data_memory_barrier();
+            data_memory_barrier();
             // initialize uart connection
             let mut serial_port = Uart::new(unsafe {
                 OwnedMmioPointer::new(
@@ -51,7 +51,7 @@ impl Pl011Uart {
                 )
                 .expect("Unable to enable serial port");
 
-            //(0..300).for_each(|_| unsafe { asm!("nop") });
+            (0..300).for_each(|_| unsafe { asm!("nop") });
 
             // Return mutex with serial port
             Self {

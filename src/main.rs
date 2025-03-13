@@ -37,6 +37,12 @@ fn kernel_main() -> ! {
     serial_println!("From {}", "Rust");
     println!("2+2={}", 2 + 2);
     serial_println!("2+2={}", 2 + 2);
+    let mut x: u32 = 0;
+    loop {
+        serial_println!("Hello {}", x);
+        println!("From {}", "Rust");
+        x += 1;
+    }
     panic!("Stopping");
 }
 
