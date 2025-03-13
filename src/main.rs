@@ -34,7 +34,9 @@ fn kernel_main() -> ! {
     serial_println!("Hello");
     println!("Hello");
     println!("From {}", "Rust");
+    serial_println!("From {}", "Rust");
     println!("2+2={}", 2 + 2);
+    serial_println!("2+2={}", 2 + 2);
     panic!("Stopping");
 }
 

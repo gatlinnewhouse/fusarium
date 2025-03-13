@@ -41,10 +41,6 @@ pub fn init() {
         unsafe { interrupts::PICS.lock().initialize() };
         x86_64::instructions::interrupts::enable();
     }
-    #[cfg(target_arch = "arm")]
-    {
-        armv6a::interrupts::enable();
-    }
 }
 
 pub fn hlt_loop() -> ! {

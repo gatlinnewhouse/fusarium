@@ -75,17 +75,17 @@ impl MailBox {
         unsafe {
             MAIL0_WRITE.write_volatile(mail.write_mail().into());
         }
-        data_memory_barrier();
+        //data_memory_barrier();
     }
 
     pub fn read_mail(&mut self) -> Mail {
         while self.mail_status().is_empty() {}
-        data_memory_barrier();
+        //data_memory_barrier();
         unsafe { MAIL0_READ.read_volatile().into() }
     }
 
     pub fn mail_status(&self) -> MailStatus {
-        data_memory_barrier();
+        //data_memory_barrier();
         unsafe { MAIL0_STATUS.read_volatile().into() }
     }
 }

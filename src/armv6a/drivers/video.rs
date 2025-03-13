@@ -7,9 +7,10 @@ use super::{
 };
 use crate::armv6a::{
     drivers::framebuffer::{FrameBufferMail, Pixel},
-    interrupts::without_interrupts,
+    interrupts::{data_memory_barrier, without_interrupts},
 };
 use core::{
+    arch::asm,
     slice::from_raw_parts_mut,
     sync::atomic::{AtomicBool, Ordering},
 };
@@ -35,6 +36,8 @@ impl<'a> VideoDriver<'a> {
                 None
             } else {
                 VIDEO_AVAIL.store(false, Ordering::Relaxed);
+                //data_memory_barrier();
+                (0..300).for_each(|_| unsafe { asm!("nop") });
                 without_interrupts(|| {
                     Some(VideoDriver {
                         buffer: FrameBuffer::unitialized(),

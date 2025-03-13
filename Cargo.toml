@@ -51,7 +51,7 @@ x86_64 = { version = "0.14.2" }
 
 # Feature config
 [features]
-default = ["armv6a", "qemu"]
+default = ["armv6a"]
 
 # Hardware configs
 armv6a = [

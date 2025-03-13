@@ -1,5 +1,5 @@
 /* The linker script for the uart bootloader of the Raspberry Pi 0. */
-
+/* From rpi-devenv */
 /* We do not care about setting a LOAD address, because the raspberry pi always loads the binary at 0x8000. */
 __physical_load_address = 0x8000;
 

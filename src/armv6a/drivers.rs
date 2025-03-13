@@ -1,4 +1,11 @@
+use arm_pl011_uart::Uart;
 use core::{marker::PhantomData, ops};
+use gpio::GPIO;
+use lazy_static::lazy_static;
+use spin::Mutex;
+use uart::Pl011Uart;
+
+use super::memory::map::mmio::GPIO_START;
 
 /// Framebuffer
 pub mod framebuffer;
@@ -32,5 +39,28 @@ impl<T> ops::Deref for MMIODerefWrapper<T> {
     /// Return the wrapped type from the wrapper
     fn deref(&self) -> &Self::Target {
         unsafe { &*(self.start_addr as *const _) }
+    }
+}
+
+pub static mut DRIVERS: Mgmnt = Mgmnt::new();
+
+pub struct Mgmnt {
+    gpio: Option<GPIO>,
+    pub uart: Option<Pl011Uart>,
+}
+
+impl Mgmnt {
+    const fn new() -> Self {
+        Self {
+            gpio: None,
+            uart: None,
+        }
+    }
+    pub fn init(&mut self) {
+        self.gpio = Some(GPIO::new(GPIO_START));
+        self.uart = Some(Pl011Uart::new(self.gpio.as_ref().unwrap()));
+    }
+    pub fn get_uart(&self) -> &'static Mutex<Uart> {
+        &self.uart.as_ref().unwrap().inner
     }
 }

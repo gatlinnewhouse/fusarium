@@ -1,13 +1,13 @@
+use core::arch::asm;
+
 use super::MMIODerefWrapper;
-use crate::armv6a::memory::map::mmio::GPIO_START;
+use crate::armv6a::{interrupts::data_memory_barrier, memory::map::mmio::GPIO_START};
 use spin::Mutex;
 use tock_registers::{
     interfaces::{ReadWriteable, Writeable},
     register_bitfields, register_structs,
     registers::ReadWrite,
 };
-
-pub static mut GPIO: GPIO = GPIO::new(GPIO_START);
 
 // rust-raspberrypi-OS-tutorials
 // and this blog: https://litchipi.site/post/17611351315151745365
@@ -60,9 +60,11 @@ impl GPIOInner {
         }
     }
     pub fn map_pl011_uart(&mut self) {
+        //data_memory_barrier();
         self.regs
             .GPFSEL1
             .modify(GPFSEL1::FSEL15::AltFunc0 + GPFSEL1::FSEL14::AltFunc0);
+        //(0..300).for_each(|_| unsafe { asm!("nop") });
     }
 }
 

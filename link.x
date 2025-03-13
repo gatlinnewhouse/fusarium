@@ -1,45 +1,41 @@
-ENTRY(_start)
+/* rpi-devenv */
+__physical_load_address = 0x8000;
 
+ENTRY(__physical_load_address)
 SECTIONS
 {
-    /* From https://wiki.osdev.org/Raspberry_Pi_Bare_Bones */
-    /* Starts at LOADER_ADDR. */
-    . = 0x8000;
-    /* For AArch64, use . = 0x80000; */
-    __start = .;
-    __text_start = .;
+    /* Starts at load address. */
+    . = __physical_load_address;
     .text :
     {
         KEEP(*(.text.boot))
         *(.text)
+        *(.text.*)
     }
-    . = ALIGN(4096); /* align to page size */
-    __text_end = .;
 
-    __rodata_start = .;
     .rodata :
     {
         *(.rodata)
+        *(.rodata.*)
     }
-    . = ALIGN(4096); /* align to page size */
-    __rodata_end = .;
 
-    __data_start = .;
-    .data :
-    {
+    .data : 
+    { 
         *(.data)
+        *(.data.*) 
     }
-    . = ALIGN(4096); /* align to page size */
-    __data_end = .;
 
     __bss_start = .;
     .bss :
     {
-        bss = .;
         *(.bss)
+        *(.bss.*)
     }
-    . = ALIGN(4096); /* align to page size */
     __bss_end = .;
-    __bss_size = __bss_end - __bss_start;
-    __end = .;
+    
+    /* 
+        We do not care about stack unwinding information, so we discard it.
+    */
+    /DISCARD/ : { *(.ARM.exidx*) }
 }
+

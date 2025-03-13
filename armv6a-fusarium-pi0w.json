@@ -6,7 +6,7 @@
   "disable-redzone": true,
   "emit-debug-gdb-scripts": false,
   "executables": true,
-  "features": "+v6,+armv6,+vfp2,-neon,+strict-align",
+  "features": "+v6k,+vfp2,+strict-align,-d32",
   "linker": "rust-lld",
   "linker-flavor": "gnu-lld",
   "llvm-target": "armv6k-unknown-eabihf",
