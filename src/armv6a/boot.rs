@@ -6,14 +6,12 @@ use fusarium::armv6a::{
 // Import the assembly file
 core::arch::global_asm!(include_str!("boot.s"), options(raw));
 
+#[export_name = "rust_irq_handler"]
+pub extern "C" fn irq_handler() {}
+
 /// Help from <https://github.com/carloskiki/rpi-devenv>
 #[no_mangle]
 pub extern "C" fn _start_rust() -> ! {
-    // Safety: This value is provided by the linker script.
-    unsafe extern "C" {
-        #[link_name = "__physical_load_address"]
-        static LOAD_ADDRESS: u8;
-    }
     kernel_init()
 }
 

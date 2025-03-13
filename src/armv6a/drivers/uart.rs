@@ -30,10 +30,10 @@ impl Pl011Uart {
             });
 
             // Disable it in case it is already enabled
-            serial_port.disable();
+            //serial_port.disable();
 
             // Clear all pending interrupts
-            serial_port.clear_interrupts(Interrupts::all());
+            //serial_port.clear_interrupts(Interrupts::all());
 
             // Baud rate and sysclock found here:
             // https://github.com/thanoskoutr/armOS/blob/6ae7f6bf5a5e812a35e731fc95e29e2cc1e3e7a8/src/kernel/uart.c#L86
