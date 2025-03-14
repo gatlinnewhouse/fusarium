@@ -1,4 +1,4 @@
-use core::arch::asm;
+use core::{arch::asm, fmt::Write};
 
 use arm_pl011_uart::{DataBits, Interrupts, LineConfig, OwnedMmioPointer, Parity, StopBits, Uart};
 use spin::Mutex;
@@ -52,6 +52,8 @@ impl Pl011Uart {
                 .expect("Unable to enable serial port");
 
             (0..300).for_each(|_| unsafe { asm!("nop") });
+
+            serial_port.write_str("Ready!\n");
 
             // Return mutex with serial port
             Self {

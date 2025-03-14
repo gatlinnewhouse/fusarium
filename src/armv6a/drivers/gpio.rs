@@ -1,7 +1,13 @@
 use core::arch::asm;
 
 use super::MMIODerefWrapper;
-use crate::armv6a::{interrupts::data_memory_barrier, memory::map::mmio::GPIO_START};
+use crate::armv6a::{
+    interrupts::data_memory_barrier,
+    memory::map::mmio::{
+        gpio::{GPPUD, GPPUDCLK0, GPPUDCLK1},
+        GPIO_START,
+    },
+};
 use spin::Mutex;
 use tock_registers::{
     interfaces::{ReadWriteable, Writeable},
@@ -64,7 +70,15 @@ impl GPIOInner {
         self.regs
             .GPFSEL1
             .modify(GPFSEL1::FSEL15::AltFunc0 + GPFSEL1::FSEL14::AltFunc0);
-        (0..300).for_each(|_| unsafe { asm!("nop") });
+
+        unsafe {
+            (0..150).for_each(|_| asm!("nop"));
+            GPPUD.write_volatile(0);
+            (0..150).for_each(|_| asm!("nop"));
+            GPPUDCLK0.write_volatile((1 << 14) | (1 << 15));
+            (0..150).for_each(|_| asm!("nop"));
+            GPPUDCLK0.write_volatile(0);
+        }
     }
 }
 

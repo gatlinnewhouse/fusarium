@@ -1,13 +1,11 @@
-use crate::armv6a::{
+#[cfg(target_arch = "arm")]
+use super::armv6a::{
     drivers::{gpio::GPIO, DRIVERS},
     interrupts::{self, without_interrupts},
+    memory::map::mmio::PL011_UART_START,
 };
-
 #[cfg(target_arch = "arm")]
-use super::armv6a::memory::map::mmio::PL011_UART_START;
-use arm_pl011_uart::Interrupts;
-#[cfg(target_arch = "arm")]
-use arm_pl011_uart::{DataBits, LineConfig, OwnedMmioPointer, Parity, StopBits, Uart};
+use arm_pl011_uart::{DataBits, Interrupts, LineConfig, OwnedMmioPointer, Parity, StopBits, Uart};
 use core::{fmt::Write, ptr::write_volatile};
 use lazy_static::lazy_static;
 use spin::Mutex;

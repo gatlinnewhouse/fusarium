@@ -33,6 +33,15 @@ pub mod map {
             pub const MAIL0_WRITE: *mut u32 = (VIDEOCORE_MBOX_BASE + 0x20) as _;
             pub const MAIL0_STATUS: *mut u32 = (VIDEOCORE_MBOX_BASE + 0x18) as _;
         }
+
+        /// GPIO Pins
+        pub mod gpio {
+            use super::*;
+            pub const GPPUD_BASE: usize = GPIO_START + 0x90;
+            pub const GPPUD: *mut u32 = (GPPUD_BASE + 0x04) as _;
+            pub const GPPUDCLK0: *mut u32 = (GPPUD_BASE + 0x04) as _;
+            pub const GPPUDCLK1: *mut u32 = (GPPUD_BASE + 0x04) as _;
+        }
     }
 }
 

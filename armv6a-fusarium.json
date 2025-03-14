@@ -22,7 +22,11 @@
   "panic-strategy": "abort",
   "pre-link-args": {
     "gcc": [
-      "-nostdlib"
+      "-Wall",
+      "-nostdlib",
+      "-nostartfiles",
+      "-ffreestanding",
+      "-march=armv6k"
     ]
   },
   "relocation-model": "static",
